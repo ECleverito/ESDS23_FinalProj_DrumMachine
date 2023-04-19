@@ -35,9 +35,9 @@ uint8_t readDACreg(I2C_HandleTypeDef *I2C_handle, uint8_t regAddr, uint8_t len)
 	return regContent;
 }
 
-void configureDAC()
+void configureDAC(I2C_HandleTypeDef *I2C_handle)
 {
 	uint8_t cfgValHolder = PWR_UP_VAL;
-	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,PWR_CTL_1_REG,1,&initValHolder,1,UINT32_MAX);
+	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,PWR_CTL_1_REG,1,&cfgValHolder,1,UINT32_MAX);
 
 }
