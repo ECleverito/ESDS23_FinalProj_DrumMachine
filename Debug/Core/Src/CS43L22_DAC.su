@@ -1,0 +1,2 @@
+../Core/Src/CS43L22_DAC.c:10:6:dac_powerup_seq	40	static
+../Core/Src/CS43L22_DAC.c:26:9:readDACreg	32	static
