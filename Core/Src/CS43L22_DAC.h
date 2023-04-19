@@ -12,9 +12,7 @@
 
 #define DAC_ADDR 0x94
 
-//Register map
-#define	CHIP_ID_AND_REV_REG	0x01
-
+//Init sequence values
 #define INIT_SEQ_REG_1	0x99
 #define INIT_SEQ_VAL_1	0x00
 #define INIT_SEQ_REG_2	0x80
@@ -25,6 +23,23 @@
 #define INIT_SEQ_VAL_4	0x00
 #define INIT_SEQ_REG_5	0x00
 #define INIT_SEQ_VAL_5	0x00
+
+//Register map
+#define	CHIP_ID_AND_REV_REG	0x01
+
+#define PWR_CTL_1_REG	0x02
+#define PWR_UP_VAL		0x9E
+#define PWR_DN_VAL		0x01
+
+#define PWR_CTL_2_REG	0x04
+#define HP_AB_ALWYS_ON	0xA0
+
+#define CLK_CTL_REG		0x05
+#define AUTO_DTCT_DS	0x00
+#define AUTO_DTCT_EN	0x01
+#define SNGL_SPD_MOD	0x20
+
+
 
 #include <stdint.h>
 
