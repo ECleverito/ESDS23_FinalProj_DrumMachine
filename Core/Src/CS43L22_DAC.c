@@ -37,7 +37,17 @@ uint8_t readDACreg(I2C_HandleTypeDef *I2C_handle, uint8_t regAddr, uint8_t len)
 
 void configureDAC(I2C_HandleTypeDef *I2C_handle)
 {
+	//Power up the DAC
 	uint8_t cfgValHolder = PWR_UP_VAL;
 	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,PWR_CTL_1_REG,1,&cfgValHolder,1,UINT32_MAX);
-
+	//Turn on headphone line output channels A & B
+	cfgValHolder = HP_AB_ALWYS_ON;
+	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,PWR_CTL_2_REG,1,&cfgValHolder,1,UINT32_MAX);
+	//Single MCLK speed mode (11.2896 MHz) and auto-detect MCLK speed in DAC
+	//as Master mode
+	cfgValHolder = AUTO_DTCT_EN | SNGL_SPD_MOD;
+	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,CLK_CTL_REG,1,&cfgValHolder,1,UINT32_MAX);
+	//Slave mode, I2S mode, 16-bit, internal SCLK=MCLK
+	cfgValHolder = SLVE_MOD | I2S_MOD | SIXTEEN_BIT_MOD |SCLK_EQ_MCLK;
+	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,IX_CTL_1_REG,1,&cfgValHolder,1,UINT32_MAX);
 }
