@@ -102,6 +102,7 @@ int main(void)
   dac_powerup_seq(&hi2c1);
   readDACreg(&hi2c1, CHIP_ID_AND_REV_REG, 1);
   configureDAC(&hi2c1);
+  requestBeepDAC(&hi2c1);
 
   //Set LRCLK low to begin
   HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
@@ -114,8 +115,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_I2S_Receive(&hi2s3,i2sSampleData,2,UINT32_MAX);
     /* USER CODE END WHILE */
-	  HAL_I2S_Transmit(&hi2s3,i2sSampleData,2,UINT32_MAX);
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -221,7 +223,7 @@ static void MX_I2S3_Init(void)
 
   /* USER CODE END I2S3_Init 1 */
   hi2s3.Instance = SPI3;
-  hi2s3.Init.Mode = I2S_MODE_MASTER_TX;
+  hi2s3.Init.Mode = I2S_MODE_MASTER_RX;
   hi2s3.Init.Standard = I2S_STANDARD_MSB;
   hi2s3.Init.DataFormat = I2S_DATAFORMAT_16B;
   hi2s3.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;

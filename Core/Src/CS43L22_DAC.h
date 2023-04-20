@@ -47,6 +47,13 @@
 #define SIXTEEN_BIT_MOD	0x03
 #define SCLK_EQ_MCLK	0x40
 
+#define BEEP_CTL_1_REG	0x1C
+#define BEEP_ON_780_MS	0x02
+#define G6_FREQ			0xC0
+
+#define BEEP_CTL_3_REG	0x1E
+#define MULTI_BEEP		0x80
+
 
 #include <stdint.h>
 
@@ -55,3 +62,5 @@ void dac_powerup_seq(I2C_HandleTypeDef *I2C_handle);
 uint8_t readDACreg(I2C_HandleTypeDef *I2C_handle, uint8_t regAddr, uint8_t len);
 
 void configureDAC(I2C_HandleTypeDef *I2C_handle);
+
+void requestBeepDAC(I2C_HandleTypeDef *I2C_handle);
