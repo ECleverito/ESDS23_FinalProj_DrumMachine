@@ -95,8 +95,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
   dac_powerup_seq(&hi2c1);
   readDACreg(&hi2c1, CHIP_ID_AND_REV_REG, 1);
+
+  //Set LRCLK low to begin
+  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+
   uint16_t i2sSampleData[] = {0xDEAD, 0xBEEF};
-  HAL_I2S_Transmit(&hi2s3,&i2sSampleData,1,UINT32_MAX);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,7 +108,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  HAL_I2S_Transmit(&hi2s3,i2sSampleData,2,UINT32_MAX);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -211,11 +215,11 @@ static void MX_I2S3_Init(void)
   /* USER CODE END I2S3_Init 1 */
   hi2s3.Instance = SPI3;
   hi2s3.Init.Mode = I2S_MODE_MASTER_TX;
-  hi2s3.Init.Standard = I2S_STANDARD_LSB;
-  hi2s3.Init.DataFormat = I2S_DATAFORMAT_16B_EXTENDED;
+  hi2s3.Init.Standard = I2S_STANDARD_MSB;
+  hi2s3.Init.DataFormat = I2S_DATAFORMAT_16B;
   hi2s3.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
   hi2s3.Init.AudioFreq = I2S_AUDIOFREQ_44K;
-  hi2s3.Init.CPOL = I2S_CPOL_LOW;
+  hi2s3.Init.CPOL = I2S_CPOL_HIGH;
   hi2s3.Init.ClockSource = I2S_CLOCK_PLL;
   hi2s3.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
   if (HAL_I2S_Init(&hi2s3) != HAL_OK)
