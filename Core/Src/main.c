@@ -23,7 +23,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "CS43L22_DAC.h"
+#include "SD_card.h"
+
 #include "stdio.h"
+#include "string.h"
 
 /* USER CODE END Includes */
 
@@ -130,6 +133,16 @@ int main(void)
   uint16_t i2sSampleData[] = {0xDEAD, 0xBEEF};
 
   printf("Hello world!\r\n");
+
+  FATFS fs;
+  FRESULT res;
+  char buff[256];
+
+  res = f_mount(&fs, "", 1);
+  if (res == FR_OK) {
+      strcpy(buff, "/Samples");
+      res = scan_files(buff);
+  }
 
   /* USER CODE END 2 */
 
