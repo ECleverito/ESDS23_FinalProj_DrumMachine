@@ -64,8 +64,8 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S3_Init(void);
-static void MX_SPI4_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_SPI4_Init(void);
 /* USER CODE BEGIN PFP */
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -135,9 +135,9 @@ int main(void)
   MX_DMA_Init();
   MX_I2C1_Init();
   MX_I2S3_Init();
-  MX_SPI4_Init();
   MX_FATFS_Init();
   MX_USART2_UART_Init();
+  MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
 
   //Reset DAC with RESET line
