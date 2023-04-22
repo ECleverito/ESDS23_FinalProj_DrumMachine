@@ -10,6 +10,8 @@
 
 #include "fatfs.h"
 
-FRESULT scan_files (char* path);
+FRESULT scan_files(char* path);
+
+FRESULT userChooseFile(DMA_HandleTypeDef *dma_handle, I2S_HandleTypeDef *i2s_handle);
 
 #endif /* SRC_SD_CARD_H_ */

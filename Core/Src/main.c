@@ -48,6 +48,7 @@
 I2C_HandleTypeDef hi2c1;
 
 I2S_HandleTypeDef hi2s3;
+DMA_HandleTypeDef hdma_spi3_tx;
 
 SPI_HandleTypeDef hspi4;
 
@@ -60,6 +61,7 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S3_Init(void);
 static void MX_SPI4_Init(void);
@@ -73,8 +75,27 @@ static void MX_USART2_UART_Init(void);
 
 PUTCHAR_PROTOTYPE
 {
-  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
-  return ch;
+	HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
+
+#ifdef __GNUC__
+#define GETCHAR_PROTOTYPE int __io_getchar(void)
+#else
+#define GETCHAR_PROTOTYPE int fgetc(FILE *f)
+#endif
+
+GETCHAR_PROTOTYPE
+{
+	uint8_t ch = 0;
+
+	__HAL_UART_CLEAR_OREFLAG(&huart2);
+
+	/* Wait for reception of a character on the USART RX line and echo this
+	* character on console */
+	HAL_UART_Receive(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
 }
 /* USER CODE END PFP */
 
@@ -99,7 +120,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  setvbuf(stdin, NULL, _IONBF, 0);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -111,6 +132,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_I2S3_Init();
   MX_SPI4_Init();
@@ -130,18 +152,14 @@ int main(void)
   //Set LRCLK low to begin
   HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
 
-  uint16_t i2sSampleData[] = {0xDEAD, 0xBEEF};
-
-  printf("Hello world!\r\n");
-
   FATFS fs;
   FRESULT res;
-  char buff[256];
 
   res = f_mount(&fs, "", 1);
-  if (res == FR_OK) {
-      strcpy(buff, "/Samples");
-      res = scan_files(buff);
+
+  if(res!=FR_OK)
+  {
+	  printf("Error in mounting SD card!\r\n");
   }
 
   /* USER CODE END 2 */
@@ -151,7 +169,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  userChooseFile(&hdma_spi3_tx,&hi2s3);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -343,6 +361,22 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Stream5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
 }
 
