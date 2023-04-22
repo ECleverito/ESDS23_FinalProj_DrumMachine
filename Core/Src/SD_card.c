@@ -9,6 +9,7 @@
 
 #include "stdio.h"
 #include "string.h"
+#include "stdbool.h"
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_dma.h"
@@ -134,15 +135,33 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 
     	printf("Wav file data size: %d\r\n",dataSize);
 
-		f_read(&selectedFile,&dataBuff,512,&numBytesRead);
+    	uint32_t buffSize;
+    	uint32_t buffPos=0;
+    	bool endOfData = false;
+
+    	while(buffPos<dataSize && !endOfData)
+    	{
+    		if((dataSize-buffPos)<512)
+    		{
+    			buffSize=dataSize-buffPos;
+    			endOfData=true;
+    		}
+    		else
+    		{
+    			buffSize=512;
+    		}
+    		f_read(&selectedFile,&dataBuff,buffSize,&numBytesRead);
+    		HAL_I2S_Transmit_IT(i2s_handle, (uint16_t *)dataBuff,buffSize>>1);
+    		buffPos+=512;
+    	}
+
 //    	for(int i=0;i<512;i+=4)
 //    	{
 //    		HAL_I2S_Transmit(i2s_handle, (uint16_t *)(dataBuff+i),2,UINT32_MAX);
-//    		HAL_Delay(1);
 //    	}
-		uint16_t deadBeef[] = {0xDEAD,0xBEEF};
-		HAL_I2S_Transmit(i2s_handle, deadBeef,2,UINT32_MAX);
-		//HAL_I2S_Transmit(i2s_handle, (uint16_t *)dataBuff,2,UINT32_MAX);
+
+//		HAL_I2S_Transmit_IT(i2s_handle, (uint16_t *)dataBuff,256);
+//		HAL_I2S_Transmit(i2s_handle, (uint16_t *)dataBuff,256,UINT32_MAX);
 
         f_closedir(&dir);
     }
