@@ -11,11 +11,18 @@
 #include "string.h"
 #include "stdbool.h"
 
+#include "main.h"
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_dma.h"
 #include "stm32f4xx_hal_i2s.h"
+#include "stm32f4xx_hal_i2s_ex.h"
 
 const char samplePath[] = "/Samples";
+uint8_t dataBuff[BUFF_SIZE];
+static volatile uint8_t *outBuffPtr = dataBuff;
+bool dataReady;
+bool firstPass;
+bool stopDMA;
+bool endOfData;
 
 //Example from FatFs lib creator elm_chan used for this implementation
 //(http://elm-chan.org/fsw/ff/doc/readdir.html)
@@ -113,10 +120,8 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
     	res = f_open(&selectedFile,fullSelectedFilePath,FA_READ);
     	if(res != FR_OK)
     	{
-    		printf("f_open error(%d)\r\n");
+    		printf("f_open error\r\n");
     	}
-
-    	uint8_t dataBuff[512];
 
     	UINT numBytesRead;
     	UINT dataSize;
@@ -136,36 +141,81 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
     	printf("Wav file data size: %d\r\n",dataSize);
 
     	uint32_t buffSize;
-    	uint32_t buffPos=0;
-    	bool endOfData = false;
+    	uint32_t dataPos=0;
+    	dataReady = true;
+    	firstPass = true;
+    	stopDMA = false;
+    	endOfData = false;
 
-    	while(buffPos<dataSize && !endOfData)
+    	while(dataPos<dataSize && !endOfData)
     	{
-    		if((dataSize-buffPos)<512)
+    		//Determine amount of data to be pushed to DMA buffer
+    		if((dataSize-dataPos)<BUFF_SIZE)
     		{
-    			buffSize=dataSize-buffPos;
+    			buffSize=dataSize-dataPos;
     			endOfData=true;
     		}
     		else
     		{
-    			buffSize=512;
+    			buffSize=BUFF_SIZE;
     		}
-    		f_read(&selectedFile,&dataBuff,buffSize,&numBytesRead);
-    		HAL_I2S_Transmit_IT(i2s_handle, (uint16_t *)dataBuff,buffSize>>1);
-    		buffPos+=512;
+
+    		//Pass SPI data to buffer
+    		if(firstPass)
+    		{
+    			f_read(&selectedFile,(uint16_t *)outBuffPtr,BUFF_SIZE,&numBytesRead);
+    			//Initiate DMA
+    			HAL_I2S_Transmit_DMA(i2s_handle,(uint16_t *)outBuffPtr,BUFF_SIZE);
+    			firstPass = false;
+    		}
+    		else if(!endOfData)
+    		{
+    			f_read(&selectedFile,(uint16_t *)outBuffPtr,BUFF_SIZE/2,&numBytesRead);
+
+    		}
+    		else
+    		{
+    			f_read(&selectedFile,(uint16_t *)outBuffPtr,buffSize,&numBytesRead);
+    		}
+
+    		dataPos+=BUFF_SIZE;
+
+    		while(!dataReady)
+    			;
+    		dataReady = false;
+
     	}
-
-//    	for(int i=0;i<512;i+=4)
-//    	{
-//    		HAL_I2S_Transmit(i2s_handle, (uint16_t *)(dataBuff+i),2,UINT32_MAX);
-//    	}
-
-//		HAL_I2S_Transmit_IT(i2s_handle, (uint16_t *)dataBuff,256);
-//		HAL_I2S_Transmit(i2s_handle, (uint16_t *)dataBuff,256,UINT32_MAX);
-
+//    	HAL_I2S_DMAStop(i2s_handle);
         f_closedir(&dir);
     }
 
     return res;
 }
 
+void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+	outBuffPtr = dataBuff;
+	dataReady = true;
+	if(stopDMA)
+	{
+		HAL_I2S_DMAStop(hi2s);
+	}
+	else if(endOfData)
+	{
+		stopDMA=true;
+	}
+}
+
+void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+	outBuffPtr = &dataBuff[BUFF_SIZE/2];
+	dataReady = true;
+	if(stopDMA)
+	{
+		HAL_I2S_DMAStop(hi2s);
+	}
+	else if(endOfData)
+	{
+		stopDMA=true;
+	}
+}

@@ -8,6 +8,8 @@
 #ifndef SRC_SD_CARD_H_
 #define SRC_SD_CARD_H_
 
+#define BUFF_SIZE 512
+
 #include "fatfs.h"
 
 FRESULT scan_files(char* path);
