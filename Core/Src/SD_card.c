@@ -147,45 +147,42 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
     	stopDMA = false;
     	endOfData = false;
 
-    	while(dataPos<dataSize && !endOfData)
+    	while(!endOfData)
     	{
     		//Determine amount of data to be pushed to DMA buffer
-    		if((dataSize-dataPos)<BUFF_SIZE)
+    		if(((dataSize-dataPos)<(BUFF_SIZE/2))&&!firstPass)
     		{
     			buffSize=dataSize-dataPos;
     			endOfData=true;
-    		}
-    		else
-    		{
-    			buffSize=BUFF_SIZE;
     		}
 
     		//Pass SPI data to buffer
     		if(firstPass)
     		{
-    			f_read(&selectedFile,(uint16_t *)outBuffPtr,BUFF_SIZE,&numBytesRead);
+    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE,&numBytesRead);
     			//Initiate DMA
-    			HAL_I2S_Transmit_DMA(i2s_handle,(uint16_t *)outBuffPtr,BUFF_SIZE);
+    			HAL_I2S_Transmit_DMA(i2s_handle,(uint16_t *)outBuffPtr,BUFF_SIZE/2);
     			firstPass = false;
+        		dataPos+=BUFF_SIZE;
     		}
     		else if(!endOfData)
     		{
-    			f_read(&selectedFile,(uint16_t *)outBuffPtr,BUFF_SIZE/2,&numBytesRead);
-
+    			__disable_irq();
+    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE/2,&numBytesRead);
+    			__enable_irq();
+        		dataPos+=BUFF_SIZE/2;
     		}
     		else
     		{
-    			f_read(&selectedFile,(uint16_t *)outBuffPtr,buffSize,&numBytesRead);
+    			f_read(&selectedFile,outBuffPtr,buffSize,&numBytesRead);
     		}
-
-    		dataPos+=BUFF_SIZE;
+    		dataReady = false;
 
     		while(!dataReady)
     			;
-    		dataReady = false;
 
     	}
-//    	HAL_I2S_DMAStop(i2s_handle);
+
         f_closedir(&dir);
     }
 
