@@ -114,8 +114,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
 	  HAL_I2S_Transmit(&hi2s3,i2sSampleData,2,UINT32_MAX);
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
