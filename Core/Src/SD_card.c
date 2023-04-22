@@ -50,7 +50,7 @@ FRESULT scan_files (
     return res;
 }
 
-FRESULT userChooseFile(DMA_HandleTypeDef *dma_handle, I2S_HandleTypeDef *i2s_handle)
+FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 {
     FRESULT res;
     DIR dir;
@@ -134,13 +134,15 @@ FRESULT userChooseFile(DMA_HandleTypeDef *dma_handle, I2S_HandleTypeDef *i2s_han
 
     	printf("Wav file data size: %d\r\n",dataSize);
 
-    	uint16_t outDataHolder[2];
-    	for(int i=0;i<dataSize;i+=4)
-    	{
-    		f_read(&selectedFile,&dataBuff,512,&numBytesRead);
-//    		HAL_DMA_Start(dma_handle, &outDataHolder, i2s_handle->pTxBuffPtr,1);
-    		HAL_I2S_Transmit(i2s_handle, (uint16_t *)dataBuff,512>>1,UINT32_MAX);
-    	}
+		f_read(&selectedFile,&dataBuff,512,&numBytesRead);
+//    	for(int i=0;i<512;i+=4)
+//    	{
+//    		HAL_I2S_Transmit(i2s_handle, (uint16_t *)(dataBuff+i),2,UINT32_MAX);
+//    		HAL_Delay(1);
+//    	}
+		uint16_t deadBeef[] = {0xDEAD,0xBEEF};
+		HAL_I2S_Transmit(i2s_handle, deadBeef,2,UINT32_MAX);
+		//HAL_I2S_Transmit(i2s_handle, (uint16_t *)dataBuff,2,UINT32_MAX);
 
         f_closedir(&dir);
     }
