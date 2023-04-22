@@ -17,8 +17,8 @@
 #include "stm32f4xx_hal_i2s_ex.h"
 
 const char samplePath[] = "/Samples";
-uint8_t dataBuff[BUFF_SIZE];
-static volatile uint8_t *outBuffPtr = dataBuff;
+int16_t dataBuff[BUFF_SIZE];
+static volatile int16_t *outBuffPtr = dataBuff;
 bool dataReady;
 bool firstPass;
 bool stopDMA;
@@ -159,22 +159,22 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
     		//Pass SPI data to buffer
     		if(firstPass)
     		{
-    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE,&numBytesRead);
+    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE*2,&numBytesRead);
     			//Initiate DMA
-    			HAL_I2S_Transmit_DMA(i2s_handle,(uint16_t *)outBuffPtr,BUFF_SIZE/2);
+    			HAL_I2S_Transmit_DMA(i2s_handle,(void *)outBuffPtr,BUFF_SIZE);
     			firstPass = false;
         		dataPos+=BUFF_SIZE;
     		}
     		else if(!endOfData)
     		{
     			__disable_irq();
-    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE/2,&numBytesRead);
+    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE,&numBytesRead);
     			__enable_irq();
         		dataPos+=BUFF_SIZE/2;
     		}
     		else
     		{
-    			f_read(&selectedFile,outBuffPtr,buffSize,&numBytesRead);
+    			f_read(&selectedFile,outBuffPtr,buffSize*2,&numBytesRead);
     		}
     		dataReady = false;
 
