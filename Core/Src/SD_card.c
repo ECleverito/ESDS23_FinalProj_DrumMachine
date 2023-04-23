@@ -19,7 +19,7 @@
 const char samplePath[] = "/Samples";
 int16_t dataBuff[BUFF_SIZE];
 static volatile int16_t *outBuffPtr = dataBuff;
-bool dataReady;
+volatile bool dataReady;
 bool firstPass;
 bool stopDMA;
 bool endOfData;
@@ -142,7 +142,7 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 
     	uint32_t buffSize;
     	uint32_t dataPos=0;
-    	dataReady = true;
+    	dataReady = false;
     	firstPass = true;
     	stopDMA = false;
     	endOfData = false;
@@ -150,40 +150,94 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
     	while(!endOfData)
     	{
     		//Determine amount of data to be pushed to DMA buffer
-    		if(((dataSize-dataPos)<(BUFF_SIZE/2))&&!firstPass)
+    		if((dataSize-dataPos)<BUFF_SIZE)
     		{
     			buffSize=dataSize-dataPos;
     			endOfData=true;
+    		}
+    		else
+    		{
+    			buffSize=BUFF_SIZE;
     		}
 
     		//Pass SPI data to buffer
     		if(firstPass)
     		{
-    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE*2,&numBytesRead);
+
+    			res = f_read(&selectedFile,outBuffPtr,buffSize*2,&numBytesRead);
+    			if(res!=FR_OK)
+    			{
+    				printf("first f_read error\r\n");
+    				break;
+    			}
+    			if(numBytesRead!=(buffSize*2))
+    			{
+    				printf("first f_read bytes read mismatch: %i\r\n",numBytesRead);
+    				break;
+    			}
+//    			printf("First f_read of %d bytes\r\n",BUFF_SIZE*2);
+
     			//Initiate DMA
-    			HAL_I2S_Transmit_DMA(i2s_handle,(void *)outBuffPtr,BUFF_SIZE);
+    			HAL_I2S_Transmit_DMA(i2s_handle,(void *)outBuffPtr,buffSize);
+
     			firstPass = false;
-        		dataPos+=BUFF_SIZE;
+        		dataPos+=(buffSize*2);
     		}
     		else if(!endOfData)
     		{
     			__disable_irq();
-    			f_read(&selectedFile,outBuffPtr,BUFF_SIZE,&numBytesRead);
+
+    			res = f_read(&selectedFile,outBuffPtr,BUFF_SIZE,&numBytesRead);
+
     			__enable_irq();
-        		dataPos+=BUFF_SIZE/2;
+
+    			if(res!=FR_OK)
+				{
+					printf("sequential f_read error\r\n");
+					break;
+				}
+    			if(numBytesRead!=BUFF_SIZE)
+    			{
+    				HAL_I2S_DMAStop(i2s_handle);
+    				printf("sequential f_read bytes read mismatch: %i\r\n",numBytesRead);
+    				break;
+    			}
+//    			printf("First f_read of %d bytes\r\n",BUFF_SIZE);
+
+        		dataPos+=BUFF_SIZE;
     		}
     		else
     		{
-    			f_read(&selectedFile,outBuffPtr,buffSize*2,&numBytesRead);
+//    			printf("Last read!\r\n");//For debugging, remove when done
+    			__disable_irq();
+    			res = f_read(&selectedFile,outBuffPtr,buffSize,&numBytesRead);
+    			if(res!=FR_OK)
+				{
+					printf("final f_read error\r\n");
+				}
+    			//Fill remainder of DMA buffer with zeros
+    			memset(outBuffPtr+buffSize,0,(BUFF_SIZE-buffSize)*2);
+    			__enable_irq();
+    			break;
     		}
-    		dataReady = false;
 
+    		//Wait for buffer to empty a half for SD card to fill
     		while(!dataReady)
     			;
-
+			dataReady = false;
     	}
 
-        f_closedir(&dir);
+    	res = f_close(&selectedFile);
+    	if(res!=FR_OK)
+		{
+			printf("f_close error\r\n");
+		}
+
+        res = f_closedir(&dir);
+        if(res!=FR_OK)
+		{
+			printf("f_closedir error\r\n");
+		}
     }
 
     return res;

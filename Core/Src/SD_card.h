@@ -8,7 +8,7 @@
 #ifndef SRC_SD_CARD_H_
 #define SRC_SD_CARD_H_
 
-#define BUFF_SIZE 512
+#define BUFF_SIZE 8192
 
 #include "fatfs.h"
 
