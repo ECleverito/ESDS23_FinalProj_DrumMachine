@@ -40,8 +40,8 @@
 #define SNGL_SPD_MOD	0x20
 
 #define IX_CTL_1_REG	0x06
-#define SLVE_MOD		0x80
-#define MSTER_MOD		0x7F
+#define SLVE_MOD_MSK	0x7F
+#define MSTER_MOD		0x80
 #define INV_SCLK		0x40
 #define I2S_MOD			0x04
 #define SIXTEEN_BIT_MOD	0x03

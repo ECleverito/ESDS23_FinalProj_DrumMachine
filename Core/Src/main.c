@@ -141,13 +141,13 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   //Reset DAC with RESET line
-//  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_RESET);
-//  HAL_Delay(100);
-//  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_RESET);
+  HAL_Delay(100);
+  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
 
   dac_powerup_seq(&hi2c1);
   readDACreg(&hi2c1, CHIP_ID_AND_REV_REG, 1);
-//  configureDAC(&hi2c1);
+  configureDAC(&hi2c1);
 
   //Set LRCLK low to begin
   HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);

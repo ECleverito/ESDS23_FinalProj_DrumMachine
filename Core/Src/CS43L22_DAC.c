@@ -48,6 +48,6 @@ void configureDAC(I2C_HandleTypeDef *I2C_handle)
 	cfgValHolder = AUTO_DTCT_EN | SNGL_SPD_MOD;
 	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,CLK_CTL_REG,1,&cfgValHolder,1,UINT32_MAX);
 	//Slave mode, I2S mode, 16-bit, internal SCLK=MCLK
-	cfgValHolder = SLVE_MOD | I2S_MOD | SIXTEEN_BIT_MOD |SCLK_EQ_MCLK;
+	cfgValHolder = I2S_MOD | SIXTEEN_BIT_MOD |SCLK_EQ_MCLK;
 	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,IX_CTL_1_REG,1,&cfgValHolder,1,UINT32_MAX);
 }
