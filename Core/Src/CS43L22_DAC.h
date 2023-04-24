@@ -47,6 +47,18 @@
 #define SIXTEEN_BIT_MOD	0x03
 #define SCLK_EQ_MCLK	0x40
 
+#define MISC_CTL_REG		0x0E
+#define PASSTHRU_ANLG_EN	0xC0
+#define SOFTRAMP_EN			0x02
+
+#define PASSTHRU_VOL_REG	0x15
+#define NEG_60_DB			0x88
+
+#define PASSTHRU_SELECT_REG	0x09
+#define AIN1_EN				0x01
+#define AIN2_EN				0x02
+#define AIN3_EN				0x04
+#define AIN4_EN				0x08
 
 #include <stdint.h>
 
