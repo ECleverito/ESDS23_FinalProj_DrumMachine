@@ -19,6 +19,9 @@
 const char samplePath[] = "/Samples";
 uint16_t dataBuff[BUFF_SIZE];
 
+bool sendingWav = false;
+//uint16_t zeroData;
+
 //Example from FatFs lib creator elm_chan used for this implementation
 //(http://elm-chan.org/fsw/ff/doc/readdir.html)
 FRESULT scan_files (
@@ -135,6 +138,10 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 
     	printf("Wav file data size: %d\r\n",dataSize);
 
+    	sendingWav = true;
+
+    	NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+
     	//Read wav file data into buffer
 		res = f_read(&selectedFile,(void *)dataBuff,dataSize,&numBytesRead);
 		if(res!=FR_OK)
@@ -162,5 +169,18 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
     }
 
     return res;
+}
+
+void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+
+	if(sendingWav)
+	{
+		sendingWav=false;
+		HAL_I2S_DMAStop(hi2s);
+		NVIC_DisableIRQ(DMA1_Stream5_IRQn);
+		HAL_I2S_Transmit(hi2s, zeroData, 1, UINT32_MAX);
+	}
+
 }
 

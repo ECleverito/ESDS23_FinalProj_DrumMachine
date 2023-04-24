@@ -55,7 +55,22 @@ SPI_HandleTypeDef hspi4;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+const uint16_t zeroData[] =   {5,
+							   5,
+							   0,
+							   0,
+							   5,
+							   5,
+							   0,
+							   0,
+							   5,
+							   5,
+							   0,
+							   0,
+							   5,
+							   5,
+							   0,
+							   0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -161,6 +176,13 @@ int main(void)
   {
 	  printf("Error in mounting SD card!\r\n");
   }
+
+  //Disable DMA completion register interrupts
+  NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+  //Start sending zeros to DAC
+  HAL_I2S_Transmit_DMA(&hi2s3, zeroData, 1);
+
+
 
   /* USER CODE END 2 */
 

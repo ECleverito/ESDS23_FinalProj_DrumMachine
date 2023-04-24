@@ -41,7 +41,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern const uint16_t zeroData[16];
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
