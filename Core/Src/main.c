@@ -25,6 +25,8 @@
 #include "CS43L22_DAC.h"
 #include "SD_card.h"
 
+#include "button.h"
+
 #include "stdio.h"
 #include "string.h"
 
@@ -104,6 +106,151 @@ GETCHAR_PROTOTYPE
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+//static int count_15 = 0;
+//static int count_14 = 0;
+//static int count_13 = 0;
+//static int count_12 = 0;
+//
+//
+//uint32_t skip_flag = 0;
+//uint32_t first = 0;
+//uint32_t prev_time_15 = 0;
+//uint32_t prev_time_14 = 0;
+//uint32_t prev_time_13 = 0;
+//uint32_t prev_time_12 = 0;
+
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {   // Interrupt handler for EXTI lines
+//
+//	if(skip_flag == 0)
+//	{
+//		skip_flag = 1;
+//
+//		first = HAL_GetTick();
+//
+//		// c1
+//		if (GPIO_Pin == GPIO_PIN_15) {       // Check if EXTI line 15 triggered the interrupt
+//		// PD15 has been touched with high voltage, do something here
+//
+//			uint32_t curr = HAL_GetTick();
+//
+//			if(curr - prev_time_15  < 300) // 150 ms
+//			{
+//				//skip
+//			}
+//			else
+//			{
+//				count_15++;
+//			}
+//
+//			prev_time_15 = HAL_GetTick();
+//		}
+//
+//		// c2
+//		if (GPIO_Pin == GPIO_PIN_14) {       // Check if EXTI line 15 triggered the interrupt
+//		// PD15 has been touched with high voltage, do something here
+//
+//			uint32_t curr = HAL_GetTick();
+//
+//			if(curr - prev_time_14  < 300) // 150 ms
+//			{
+//				//skip
+//			}
+//			else
+//			{
+//				count_14++;
+//			}
+//
+//			prev_time_14 = HAL_GetTick();
+//		}
+//
+//		// c3
+//		if (GPIO_Pin == GPIO_PIN_13) {       // Check if EXTI line 15 triggered the interrupt
+//		// PD15 has been touched with high voltage, do something here
+//
+//			uint32_t curr = HAL_GetTick();
+//
+//			if(curr - prev_time_13  < 300) // 150 ms
+//			{
+//				//skip
+//			}
+//			else
+//			{
+//				count_13++;
+//			}
+//
+//			prev_time_13 = HAL_GetTick();
+//		}
+//
+//		// c4
+//		if (GPIO_Pin == GPIO_PIN_12) {       // Check if EXTI line 15 triggered the interrupt
+//		// PD15 has been touched with high voltage, do something here
+//
+//			uint32_t curr = HAL_GetTick();
+//
+//			if(curr - prev_time_12  < 300) // 150 ms
+//			{
+//				//skip
+//			}
+//			else
+//			{
+//				count_12++;
+//			}
+//
+//			prev_time_12 = HAL_GetTick();
+//		}
+//	}
+//	else
+//	{
+//		if( (HAL_GetTick() - first) > 15) //15ms
+//		{
+//			skip_flag = 0;
+//		}
+//	}
+//}
+
+//
+//void led_control()
+//{
+//	static int row = 0;
+//
+//	// r1
+//	if(row == 0)
+//	{
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);
+//
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_SET);   // Set PD11 high
+//
+//		row = 1;
+//	}
+//	else if(row == 1)
+//	{
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);
+//
+//		// r2
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
+//
+//		row = 2;
+//	}
+//	else if(row == 2)
+//	{
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
+//
+//		// r2
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_SET);
+//
+//		row = 3;
+//	}
+//	else if(row == 3)
+//	{
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);
+//
+//		// r2
+//		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);
+//
+//		row = 0;
+//	}
+//}
+
 /* USER CODE END 0 */
 
 /**
@@ -113,7 +260,7 @@ GETCHAR_PROTOTYPE
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+//
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -122,65 +269,93 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  setvbuf(stdin, NULL, _IONBF, 0);
+//  setvbuf(stdin, NULL, _IONBF, 0);
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+//
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_I2C1_Init();
-  MX_I2S3_Init();
-  MX_FATFS_Init();
-  MX_USART2_UART_Init();
-  MX_SPI4_Init();
+//  MX_DMA_Init();
+//  MX_I2C1_Init();
+//  MX_I2S3_Init();
+//  MX_FATFS_Init();
+//  MX_USART2_UART_Init();
+//  MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
-
-  //Reset DAC with RESET line
-  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_RESET);
-  HAL_Delay(100);
-  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
-
-  dac_powerup_seq(&hi2c1);
-  readDACreg(&hi2c1, CHIP_ID_AND_REV_REG, 1);
-  configureDAC(&hi2c1);
-
-  //Set LRCLK low to begin
-  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
-
-  FATFS fs;
-  FRESULT res;
-
-  res = f_mount(&fs, "", 1);
-
-  if(res!=FR_OK)
-  {
-	  printf("Error in mounting SD card!\r\n");
-  }
-
-  //Disable DMA completion register interrupts
-//  NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-  //Start sending zeros to DAC
-  HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
-
-
-
+//
+//  //Reset DAC with RESET line
+//  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_RESET);
+//  HAL_Delay(100);
+//  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
+//
+//  dac_powerup_seq(&hi2c1);
+//  readDACreg(&hi2c1, CHIP_ID_AND_REV_REG, 1);
+//  configureDAC(&hi2c1);
+//
+//  //Set LRCLK low to begin
+//  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+//
+//  FATFS fs;
+//  FRESULT res;
+//
+//  res = f_mount(&fs, "", 1);
+//
+//  if(res!=FR_OK)
+//  {
+//	  printf("Error in mounting SD card!\r\n");
+//  }
+//
+//  //Disable DMA completion register interrupts
+////  NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+//  //Start sending zeros to DAC
+//  HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
+//
+//
+//
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//
+//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);   // Set PD14 high
+
+//	  HAL_Init();
+//	  __HAL_RCC_GPIOD_CLK_ENABLE();   // Enable GPIO D clock
+//
+//	  GPIO_InitTypeDef GPIO_InitStruct;
+//
+//	  // Configure PD15 as input with interrupt
+//	  GPIO_InitStruct.Pin = GPIO_PIN_15;
+//	  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+//	  GPIO_InitStruct.Pull = GPIO_NOPULL;
+//	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+//	  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+//
+//	  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);   // Set interrupt priority
+//	  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);   // Enable interrupt in NVIC
+
+//  led_control();
   while (1)
   {
-	  userChooseFile(&hi2s3);
+//	  userChooseFile(&hi2s3);
+
+	  button_sensing();
+//	  led_control();
+//	  HAL_Delay(35);
+
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+//		led_control();
   }
   /* USER CODE END 3 */
 }
@@ -402,12 +577,15 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI_SD_CS_GPIO_Port, SPI_SD_CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
@@ -419,12 +597,29 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI_SD_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : DAC_RESET_Pin */
-  GPIO_InitStruct.Pin = DAC_RESET_Pin;
+  /*Configure GPIO pins : PD8 PD9 PD10 DAC_RESET_Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|DAC_RESET_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PD11 */
+  GPIO_InitStruct.Pin = GPIO_PIN_11;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(DAC_RESET_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PD12 PD13 PD14 PD15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
