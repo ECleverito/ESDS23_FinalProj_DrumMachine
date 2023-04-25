@@ -55,22 +55,9 @@ SPI_HandleTypeDef hspi4;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-const uint16_t zeroData[] =   {5,
-							   5,
-							   0,
-							   0,
-							   5,
-							   5,
-							   0,
-							   0,
-							   5,
-							   5,
-							   0,
-							   0,
-							   5,
-							   5,
-							   0,
-							   0};
+//const uint16_t silenceData[] = {0xD3,0xD3,0x2C,0x2C,0xD2,0xD2,0xD2,0xD2,0xD2,0xD2};
+const uint16_t silenceData[] = {0,0,0,0,0,0,0,0,0,0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -178,9 +165,9 @@ int main(void)
   }
 
   //Disable DMA completion register interrupts
-  NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+//  NVIC_EnableIRQ(DMA1_Stream5_IRQn);
   //Start sending zeros to DAC
-  HAL_I2S_Transmit_DMA(&hi2s3, zeroData, 1);
+  HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
 
 
 

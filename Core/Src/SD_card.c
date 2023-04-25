@@ -138,9 +138,8 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 
     	printf("Wav file data size: %d\r\n",dataSize);
 
-    	sendingWav = true;
-
-    	NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+//
+//    	NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
     	//Read wav file data into buffer
 		res = f_read(&selectedFile,(void *)dataBuff,dataSize,&numBytesRead);
@@ -152,6 +151,8 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 		//Fill rest of buffer with zeroes
 		memset(dataBuff+dataSize,0,(BUFF_SIZE*2)-dataSize);
 
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,dataBuff,(dataSize/2));
 
@@ -178,8 +179,7 @@ void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
 	{
 		sendingWav=false;
 		HAL_I2S_DMAStop(hi2s);
-		NVIC_DisableIRQ(DMA1_Stream5_IRQn);
-		HAL_I2S_Transmit(hi2s, zeroData, 1, UINT32_MAX);
+		HAL_I2S_Transmit_DMA(hi2s, silenceData, 10);
 	}
 
 }
