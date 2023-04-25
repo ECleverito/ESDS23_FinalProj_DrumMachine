@@ -138,18 +138,12 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 
     	printf("Wav file data size: %d\r\n",dataSize);
 
-//
-//    	NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-
     	//Read wav file data into buffer
 		res = f_read(&selectedFile,(void *)dataBuff,dataSize,&numBytesRead);
 		if(res!=FR_OK)
 		{
 			printf("first f_read error\r\n");
 		}
-
-		//Fill rest of buffer with zeroes
-		memset(dataBuff+dataSize,0,(BUFF_SIZE*2)-dataSize);
 
 		HAL_I2S_DMAStop(i2s_handle);
     	sendingWav = true;
