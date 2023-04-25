@@ -7,6 +7,8 @@
 
 #include "SD_card.h"
 
+#include "internalSamples.h"
+
 #include "stdio.h"
 #include "string.h"
 #include "stdbool.h"
@@ -164,6 +166,101 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
     }
 
     return res;
+}
+
+void playInternalSample(I2S_HandleTypeDef *i2s_handle)
+{
+	printf("Select one of the following drum samples to play: \r\n");
+
+	printf("\t1 - Hat\r\n");
+
+	printf("\t2 - Kick\r\n");
+
+	printf("\t3 - Open Hat\r\n");
+
+	printf("\t4 - Rim\r\n");
+
+	printf("\t5 - Snare\r\n");
+
+	printf("\t6 - Tom 1\r\n");
+
+	printf("\t7 - Tom 2\r\n");
+
+	printf("\t8 - Tom 3\r\n");
+
+	printf("\t9 - Trash\r\n\n");
+
+	uint8_t selectedSample = getchar();
+
+	switch(selectedSample-48)
+	{
+	case 1:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,hat_sample,7144);
+		break;
+	case 2:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,kick_sample,7144);
+		break;
+	case 3:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,opHat_sample,7144);
+		break;
+	case 4:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,opHat_sample,7144);
+		break;
+	case 5:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,rim_sample,7144);
+		break;
+	case 6:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,tom1_sample,7144);
+		break;
+	case 7:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,tom2_sample,7144);
+		break;
+	case 8:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,tom3_sample,7144);
+		break;
+	case 9:
+		//Play Hat
+		HAL_I2S_DMAStop(i2s_handle);
+    	sendingWav = true;
+		//Start DMA
+		HAL_I2S_Transmit_DMA(i2s_handle,trash_sample,7144);
+		break;
+	default:
+		break;
+
+	}
 }
 
 void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)

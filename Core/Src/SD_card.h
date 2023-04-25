@@ -16,4 +16,6 @@ FRESULT scan_files(char* path);
 
 FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle);
 
+void playInternalSample(I2S_HandleTypeDef *i2s_handle);
+
 #endif /* SRC_SD_CARD_H_ */

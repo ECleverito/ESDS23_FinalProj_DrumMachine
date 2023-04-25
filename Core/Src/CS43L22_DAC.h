@@ -60,6 +60,18 @@
 #define AIN3_EN				0x04
 #define AIN4_EN				0x08
 
+#define TONE_CTL_REG		0x1F
+#define MAX_TREB_GAIN		0x00
+#define NO_TREB_GAIN		0x80
+#define MIN_TREB_GAIN		0xF0
+#define MAX_BASS_GAIN		0x00
+#define NO_BASS_GAIN		0x08
+#define MIN_BASS_GAIN		0x0F
+
+#define CHRG_PMP_CTL		0x34
+#define CHRG_PMP_HIFREQ		0x00
+#define CHRG_PMP_LOFREQ		0xF0
+
 #include <stdint.h>
 
 void dac_powerup_seq(I2C_HandleTypeDef *I2C_handle);

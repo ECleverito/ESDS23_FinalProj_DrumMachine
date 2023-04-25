@@ -164,8 +164,6 @@ int main(void)
 	  printf("Error in mounting SD card!\r\n");
   }
 
-  //Disable DMA completion register interrupts
-//  NVIC_EnableIRQ(DMA1_Stream5_IRQn);
   //Start sending zeros to DAC
   HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
 
@@ -177,7 +175,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  userChooseFile(&hi2s3);
+	  playInternalSample(&hi2s3);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -289,7 +287,7 @@ static void MX_I2S3_Init(void)
   hi2s3.Init.Standard = I2S_STANDARD_PHILIPS;
   hi2s3.Init.DataFormat = I2S_DATAFORMAT_16B;
   hi2s3.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
-  hi2s3.Init.AudioFreq = I2S_AUDIOFREQ_11K;
+  hi2s3.Init.AudioFreq = I2S_AUDIOFREQ_22K;
   hi2s3.Init.CPOL = I2S_CPOL_HIGH;
   hi2s3.Init.ClockSource = I2S_CLOCK_PLL;
   hi2s3.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
