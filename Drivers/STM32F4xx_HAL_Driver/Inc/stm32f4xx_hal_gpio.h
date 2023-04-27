@@ -82,7 +82,7 @@ typedef enum
 /** @defgroup GPIO_pins_define GPIO pins define
   * @{
   */
-#define GPIO_PIN_0                 ((uint16_t)0x0001)  /* Pin 0 selected    */
+#define #define GPIO_PIN_0                 ((uint16_t)0x0001)  /* Pin 0 selected    */                 ((uint16_t)0x0001)  /* Pin 0 selected    */
 #define GPIO_PIN_1                 ((uint16_t)0x0002)  /* Pin 1 selected    */
 #define GPIO_PIN_2                 ((uint16_t)0x0004)  /* Pin 2 selected    */
 #define GPIO_PIN_3                 ((uint16_t)0x0008)  /* Pin 3 selected    */
