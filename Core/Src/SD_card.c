@@ -21,7 +21,7 @@
 const char samplePath[] = "/Samples";
 uint16_t dataBuff[BUFF_SIZE];
 
-bool sendingWav = false;
+bool sendingWavSD = false;
 //uint16_t zeroData;
 
 //Example from FatFs lib creator elm_chan used for this implementation
@@ -148,7 +148,7 @@ FRESULT userChooseFile(I2S_HandleTypeDef *i2s_handle)
 		}
 
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,dataBuff,(dataSize/2));
 
@@ -197,63 +197,63 @@ void playInternalSample(I2S_HandleTypeDef *i2s_handle)
 	case 1:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,hat_sample,7144);
 		break;
 	case 2:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,kick_sample,7144);
 		break;
 	case 3:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,opHat_sample,7144);
 		break;
 	case 4:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,opHat_sample,7144);
 		break;
 	case 5:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,rim_sample,7144);
 		break;
 	case 6:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,tom1_sample,7144);
 		break;
 	case 7:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,tom2_sample,7144);
 		break;
 	case 8:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,tom3_sample,7144);
 		break;
 	case 9:
 		//Play Hat
 		HAL_I2S_DMAStop(i2s_handle);
-    	sendingWav = true;
+    	sendingWavSD = true;
 		//Start DMA
 		HAL_I2S_Transmit_DMA(i2s_handle,trash_sample,7144);
 		break;
@@ -263,15 +263,5 @@ void playInternalSample(I2S_HandleTypeDef *i2s_handle)
 	}
 }
 
-void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
-{
 
-	if(sendingWav)
-	{
-		sendingWav=false;
-		HAL_I2S_DMAStop(hi2s);
-		HAL_I2S_Transmit_DMA(hi2s, silenceData, 10);
-	}
-
-}
 

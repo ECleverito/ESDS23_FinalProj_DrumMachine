@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define SPI_SD_CS_Pin GPIO_PIN_15
 #define SPI_SD_CS_GPIO_Port GPIOE
+#define GRN_LED_Pin GPIO_PIN_12
+#define GRN_LED_GPIO_Port GPIOD
 #define DAC_RESET_Pin GPIO_PIN_4
 #define DAC_RESET_GPIO_Port GPIOD
 
