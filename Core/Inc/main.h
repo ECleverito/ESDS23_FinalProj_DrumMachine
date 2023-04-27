@@ -41,7 +41,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern const uint16_t silenceData[10];
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -57,11 +57,13 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define SPI_SD_CS_Pin GPIO_PIN_15
+#define SPI_SD_CS_GPIO_Port GPIOE
 #define DAC_RESET_Pin GPIO_PIN_4
 #define DAC_RESET_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
-
+#define SD_SPI_HANDLE hspi4
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

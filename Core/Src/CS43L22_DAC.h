@@ -40,13 +40,37 @@
 #define SNGL_SPD_MOD	0x20
 
 #define IX_CTL_1_REG	0x06
-#define SLVE_MOD		0x80
-#define MSTER_MOD		0x7F
+#define SLVE_MOD_MSK	0x7F
+#define MSTER_MOD		0x80
 #define INV_SCLK		0x40
 #define I2S_MOD			0x04
 #define SIXTEEN_BIT_MOD	0x03
 #define SCLK_EQ_MCLK	0x40
 
+#define MISC_CTL_REG		0x0E
+#define PASSTHRU_ANLG_EN	0xC0
+#define SOFTRAMP_EN			0x02
+
+#define PASSTHRU_VOL_REG	0x15
+#define NEG_60_DB			0x88
+
+#define PASSTHRU_SELECT_REG	0x09
+#define AIN1_EN				0x01
+#define AIN2_EN				0x02
+#define AIN3_EN				0x04
+#define AIN4_EN				0x08
+
+#define TONE_CTL_REG		0x1F
+#define MAX_TREB_GAIN		0x00
+#define NO_TREB_GAIN		0x80
+#define MIN_TREB_GAIN		0xF0
+#define MAX_BASS_GAIN		0x00
+#define NO_BASS_GAIN		0x08
+#define MIN_BASS_GAIN		0x0F
+
+#define CHRG_PMP_CTL		0x34
+#define CHRG_PMP_HIFREQ		0x00
+#define CHRG_PMP_LOFREQ		0xF0
 
 #include <stdint.h>
 

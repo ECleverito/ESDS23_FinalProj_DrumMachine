@@ -48,6 +48,21 @@ void configureDAC(I2C_HandleTypeDef *I2C_handle)
 	cfgValHolder = AUTO_DTCT_EN | SNGL_SPD_MOD;
 	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,CLK_CTL_REG,1,&cfgValHolder,1,UINT32_MAX);
 	//Slave mode, I2S mode, 16-bit, internal SCLK=MCLK
-	cfgValHolder = SLVE_MOD | I2S_MOD | SIXTEEN_BIT_MOD |SCLK_EQ_MCLK;
+	cfgValHolder = I2S_MOD | SIXTEEN_BIT_MOD |SCLK_EQ_MCLK;
 	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,IX_CTL_1_REG,1,&cfgValHolder,1,UINT32_MAX);
+	cfgValHolder = MAX_TREB_GAIN | MIN_BASS_GAIN;
+	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,TONE_CTL_REG,1,&cfgValHolder,1,UINT32_MAX);
+	//Analog passthrough and digital soft ramp
+//	cfgValHolder = PASSTHRU_ANLG_EN | SOFTRAMP_EN;
+//	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,MISC_CTL_REG,1,&cfgValHolder,1,UINT32_MAX);
+//	//Set analog passthrough to -60 dB volume
+//	cfgValHolder = NEG_60_DB;
+//	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,PASSTHRU_VOL_REG,1,&cfgValHolder,1,UINT32_MAX);
+//	//Select AIN2 for passing through to output
+//	cfgValHolder = AIN2_EN;
+//	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,PASSTHRU_SELECT_REG,1,&cfgValHolder,1,UINT32_MAX);
+	//Set HP line charge pump freq.
+//	cfgValHolder = CHRG_PMP_LOFREQ;
+//	HAL_I2C_Mem_Write(I2C_handle,DAC_ADDR,CHRG_PMP_CTL,1,&cfgValHolder,1,UINT32_MAX);
+
 }

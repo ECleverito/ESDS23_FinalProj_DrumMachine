@@ -18,10 +18,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "CS43L22_DAC.h"
+#include "SD_card.h"
+
+#include "stdio.h"
+#include "string.h"
 
 /* USER CODE END Includes */
 
@@ -43,18 +48,57 @@
 I2C_HandleTypeDef hi2c1;
 
 I2S_HandleTypeDef hi2s3;
+DMA_HandleTypeDef hdma_spi3_tx;
+
+SPI_HandleTypeDef hspi4;
+
+UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+//const uint16_t silenceData[] = {0xD3,0xD3,0x2C,0x2C,0xD2,0xD2,0xD2,0xD2,0xD2,0xD2};
+const uint16_t silenceData[] = {0,0,0,0,0,0,0,0,0,0};
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S3_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_SPI4_Init(void);
 /* USER CODE BEGIN PFP */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
 
+PUTCHAR_PROTOTYPE
+{
+	HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
+
+#ifdef __GNUC__
+#define GETCHAR_PROTOTYPE int __io_getchar(void)
+#else
+#define GETCHAR_PROTOTYPE int fgetc(FILE *f)
+#endif
+
+GETCHAR_PROTOTYPE
+{
+	uint8_t ch = 0;
+
+	__HAL_UART_CLEAR_OREFLAG(&huart2);
+
+	/* Wait for reception of a character on the USART RX line and echo this
+	* character on console */
+	HAL_UART_Receive(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -78,7 +122,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  setvbuf(stdin, NULL, _IONBF, 0);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -90,8 +134,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_I2S3_Init();
+  MX_FATFS_Init();
+  MX_USART2_UART_Init();
+  MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
 
   //Reset DAC with RESET line
@@ -106,7 +154,20 @@ int main(void)
   //Set LRCLK low to begin
   HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
 
-  uint16_t i2sSampleData[] = {0xDEAD, 0xBEEF};
+  FATFS fs;
+  FRESULT res;
+
+  res = f_mount(&fs, "", 1);
+
+  if(res!=FR_OK)
+  {
+	  printf("Error in mounting SD card!\r\n");
+  }
+
+  //Start sending zeros to DAC
+  HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
+
+
 
   /* USER CODE END 2 */
 
@@ -114,7 +175,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_I2S_Transmit(&hi2s3,i2sSampleData,2,UINT32_MAX);
+	  playInternalSample(&hi2s3);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -223,10 +284,10 @@ static void MX_I2S3_Init(void)
   /* USER CODE END I2S3_Init 1 */
   hi2s3.Instance = SPI3;
   hi2s3.Init.Mode = I2S_MODE_MASTER_TX;
-  hi2s3.Init.Standard = I2S_STANDARD_MSB;
+  hi2s3.Init.Standard = I2S_STANDARD_PHILIPS;
   hi2s3.Init.DataFormat = I2S_DATAFORMAT_16B;
   hi2s3.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
-  hi2s3.Init.AudioFreq = I2S_AUDIOFREQ_44K;
+  hi2s3.Init.AudioFreq = I2S_AUDIOFREQ_22K;
   hi2s3.Init.CPOL = I2S_CPOL_HIGH;
   hi2s3.Init.ClockSource = I2S_CLOCK_PLL;
   hi2s3.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
@@ -241,6 +302,93 @@ static void MX_I2S3_Init(void)
 }
 
 /**
+  * @brief SPI4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI4_Init(void)
+{
+
+  /* USER CODE BEGIN SPI4_Init 0 */
+
+  /* USER CODE END SPI4_Init 0 */
+
+  /* USER CODE BEGIN SPI4_Init 1 */
+
+  /* USER CODE END SPI4_Init 1 */
+  /* SPI4 parameter configuration*/
+  hspi4.Instance = SPI4;
+  hspi4.Init.Mode = SPI_MODE_MASTER;
+  hspi4.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi4.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi4.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi4.Init.NSS = SPI_NSS_SOFT;
+  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+  hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi4.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI4_Init 2 */
+
+  /* USER CODE END SPI4_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Stream5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -251,12 +399,23 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SPI_SD_CS_GPIO_Port, SPI_SD_CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : SPI_SD_CS_Pin */
+  GPIO_InitStruct.Pin = SPI_SD_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SPI_SD_CS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DAC_RESET_Pin */
   GPIO_InitStruct.Pin = DAC_RESET_Pin;
