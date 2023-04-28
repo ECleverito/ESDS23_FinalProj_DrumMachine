@@ -518,14 +518,11 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI_SD_CS_GPIO_Port, SPI_SD_CS_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Button_LED_1_GPIO_Port, Button_LED_1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, Button_LED_6_Pin|Button_LED_15_Pin|Button_LED_14_Pin|Button_LED_12_Pin, GPIO_PIN_RESET);
@@ -535,7 +532,7 @@ static void MX_GPIO_Init(void)
                           |Button_LED_8_Pin|Button_LED_9_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, Button_LED_13_Pin|Button_LED_11_Pin|Button_LED_10_Pin|Button_LED_1D5_Pin
+  HAL_GPIO_WritePin(GPIOD, Button_LED_13_Pin|Button_LED_11_Pin|Button_LED_10_Pin|Button_LED_1_Pin
                           |Button_LED_2_Pin|Button_LED_0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -566,13 +563,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI_SD_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Button_LED_1_Pin */
-  GPIO_InitStruct.Pin = Button_LED_1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Button_LED_1_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pins : Button_8_Pin Button_9_Pin Button_10_Pin Button_11_Pin
                            Button_12_Pin Button_13_Pin Button_14_Pin Button_15_Pin */
   GPIO_InitStruct.Pin = Button_8_Pin|Button_9_Pin|Button_10_Pin|Button_11_Pin
@@ -598,9 +588,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Button_LED_13_Pin Button_LED_11_Pin Button_LED_10_Pin DAC_RESET_Pin
-                           Button_LED_1D5_Pin Button_LED_2_Pin Button_LED_0_Pin */
+                           Button_LED_1_Pin Button_LED_2_Pin Button_LED_0_Pin */
   GPIO_InitStruct.Pin = Button_LED_13_Pin|Button_LED_11_Pin|Button_LED_10_Pin|DAC_RESET_Pin
-                          |Button_LED_1D5_Pin|Button_LED_2_Pin|Button_LED_0_Pin;
+                          |Button_LED_1_Pin|Button_LED_2_Pin|Button_LED_0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

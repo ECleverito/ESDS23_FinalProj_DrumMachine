@@ -77,8 +77,6 @@ void Error_Handler(void);
 #define Button_7_EXTI_IRQn EXTI9_5_IRQn
 #define SPI_SD_CS_Pin GPIO_PIN_15
 #define SPI_SD_CS_GPIO_Port GPIOE
-#define Button_LED_1_Pin GPIO_PIN_15
-#define Button_LED_1_GPIO_Port GPIOB
 #define Button_8_Pin GPIO_PIN_8
 #define Button_8_GPIO_Port GPIOD
 #define Button_8_EXTI_IRQn EXTI9_5_IRQn
@@ -131,8 +129,8 @@ void Error_Handler(void);
 #define Button_LED_10_GPIO_Port GPIOD
 #define DAC_RESET_Pin GPIO_PIN_4
 #define DAC_RESET_GPIO_Port GPIOD
-#define Button_LED_1D5_Pin GPIO_PIN_5
-#define Button_LED_1D5_GPIO_Port GPIOD
+#define Button_LED_1_Pin GPIO_PIN_5
+#define Button_LED_1_GPIO_Port GPIOD
 #define Button_LED_2_Pin GPIO_PIN_6
 #define Button_LED_2_GPIO_Port GPIOD
 #define Button_LED_0_Pin GPIO_PIN_7
