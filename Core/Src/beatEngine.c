@@ -52,7 +52,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==&htim1)
 	{
-		HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
+//		HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
 	}
 
 	static uint16_t beatProgrammingBitMask=0x80;
