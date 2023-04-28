@@ -177,7 +177,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim1);
 
   //Initialize LED buttons
-  initButtonDebounceVars();
+  initButtons();
 
   demoBeatSetup();
 

@@ -7,6 +7,7 @@
 #include "beatEngine.h"
 
 #include "internalSamples.h"
+#include "buttons.h"
 
 #include "main.h"
 #include "stm32f4xx_hal.h"
@@ -52,37 +53,39 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==&htim1)
 	{
-//		HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
-	}
 
-	static uint16_t beatProgrammingBitMask=0x80;
+		static uint16_t beatProgrammingBitMask=0x8000;
 
-	if(hatBeatProgramming & beatProgrammingBitMask)
-	{
-		HAL_I2S_DMAStop(&hi2s3);
-    	sendingWav = true;
-		//Start DMA
-		HAL_I2S_Transmit_DMA(&hi2s3,hat_sample,7144);
-	}
-	else if(kickBeatProgramming & beatProgrammingBitMask)
-	{
-		HAL_I2S_DMAStop(&hi2s3);
-    	sendingWav = true;
-		//Start DMA
-		HAL_I2S_Transmit_DMA(&hi2s3,kick_sample,7144);
-	}
-	else if(snareBeatProgramming & beatProgrammingBitMask)
-	{
-		HAL_I2S_DMAStop(&hi2s3);
-    	sendingWav = true;
-		//Start DMA
-		HAL_I2S_Transmit_DMA(&hi2s3,snare_sample,7144);
-	}
+		if(hatBeatProgramming & beatProgrammingBitMask)
+		{
+			HAL_I2S_DMAStop(&hi2s3);
+			sendingWav = true;
+			//Start DMA
+			HAL_I2S_Transmit_DMA(&hi2s3,hat_sample,7144);
+		}
+		else if(kickBeatProgramming & beatProgrammingBitMask)
+		{
+			HAL_I2S_DMAStop(&hi2s3);
+			sendingWav = true;
+			//Start DMA
+			HAL_I2S_Transmit_DMA(&hi2s3,kick_sample,7144);
+		}
+		else if(snareBeatProgramming & beatProgrammingBitMask)
+		{
+			HAL_I2S_DMAStop(&hi2s3);
+			sendingWav = true;
+			//Start DMA
+			HAL_I2S_Transmit_DMA(&hi2s3,snare_sample,7144);
+		}
 
-	beatProgrammingBitMask=(beatProgrammingBitMask>>1);
-	if(beatProgrammingBitMask==0)
-	{
-		beatProgrammingBitMask=0x80;
+		cascadeLEDbeat(beatProgrammingBitMask);
+
+		beatProgrammingBitMask=(beatProgrammingBitMask>>1);
+		if(beatProgrammingBitMask==0)
+		{
+			beatProgrammingBitMask=0x8000;
+		}
+
 	}
 }
 
