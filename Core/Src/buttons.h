@@ -10,7 +10,7 @@
 
 #define BUTTON_COUNT	16
 
-#define DEBOUNCE_DELAY	300
+#define DEBOUNCE_DELAY	100
 
 void initButtonDebounceVars();
 
