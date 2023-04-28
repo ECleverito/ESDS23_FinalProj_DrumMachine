@@ -25,6 +25,7 @@
 #include "CS43L22_DAC.h"
 #include "SD_card.h"
 #include "beatEngine.h"
+#include "buttons.h"
 
 #include "stdio.h"
 #include "string.h"
@@ -171,6 +172,9 @@ int main(void)
   HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
 
   HAL_TIM_Base_Start_IT(&htim1);
+
+  //Initialize LED buttons
+  initButtonDebounceVars();
 
   demoBeatSetup();
 
@@ -437,35 +441,48 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI_SD_CS_GPIO_Port, SPI_SD_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, Button_LED_15_Pin|Button_LED_14_Pin|Button_LED_12_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(Button_LED_1_GPIO_Port, Button_LED_1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Button_LED_3_Pin|Button_LED_4_Pin|Button_LED_5_Pin|Button_LED_6_Pin
-                          |Button_LED_1_Pin|Button_LED_7_Pin|Button_LED_8_Pin|Button_LED_9_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, Button_LED_6_Pin|Button_LED_15_Pin|Button_LED_14_Pin|Button_LED_12_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, Button_LED_13_Pin|Button_LED_11_Pin|Button_LED_10_Pin|Button_LED_0_Pin
-                          |Button_LED_1D5_Pin|Button_LED_2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, Button_LED_3_Pin|Button_LED_4_Pin|Button_LED_5_Pin|Button_LED_7_Pin
+                          |Button_LED_8_Pin|Button_LED_9_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, Button_LED_13_Pin|Button_LED_11_Pin|Button_LED_10_Pin|Button_LED_1D5_Pin
+                          |Button_LED_2_Pin|Button_LED_0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : Button_2_Pin Button_3_Pin Button_4_Pin Button_5_Pin
-                           Button_6_Pin Button_7_Pin Button_0_Pin Button_1_Pin */
-  GPIO_InitStruct.Pin = Button_2_Pin|Button_3_Pin|Button_4_Pin|Button_5_Pin
-                          |Button_6_Pin|Button_7_Pin|Button_0_Pin|Button_1_Pin;
+  /*Configure GPIO pins : Button_2_Pin Button_3_Pin Button_6_Pin Button_7_Pin */
+  GPIO_InitStruct.Pin = Button_2_Pin|Button_3_Pin|Button_6_Pin|Button_7_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Button_0_Pin */
+  GPIO_InitStruct.Pin = Button_0_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(Button_0_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Button_1_Pin */
+  GPIO_InitStruct.Pin = Button_1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(Button_1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPI_SD_CS_Pin */
   GPIO_InitStruct.Pin = SPI_SD_CS_Pin;
@@ -473,6 +490,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI_SD_CS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Button_LED_1_Pin */
+  GPIO_InitStruct.Pin = Button_LED_1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(Button_LED_1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Button_8_Pin Button_9_Pin Button_10_Pin Button_11_Pin
                            Button_12_Pin Button_13_Pin Button_14_Pin Button_15_Pin */
@@ -482,30 +506,36 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Button_LED_15_Pin Button_LED_14_Pin Button_LED_12_Pin */
-  GPIO_InitStruct.Pin = Button_LED_15_Pin|Button_LED_14_Pin|Button_LED_12_Pin;
+  /*Configure GPIO pins : Button_LED_6_Pin Button_LED_15_Pin Button_LED_14_Pin Button_LED_12_Pin */
+  GPIO_InitStruct.Pin = Button_LED_6_Pin|Button_LED_15_Pin|Button_LED_14_Pin|Button_LED_12_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Button_LED_3_Pin Button_LED_4_Pin Button_LED_5_Pin Button_LED_6_Pin
-                           Button_LED_1_Pin Button_LED_7_Pin Button_LED_8_Pin Button_LED_9_Pin */
-  GPIO_InitStruct.Pin = Button_LED_3_Pin|Button_LED_4_Pin|Button_LED_5_Pin|Button_LED_6_Pin
-                          |Button_LED_1_Pin|Button_LED_7_Pin|Button_LED_8_Pin|Button_LED_9_Pin;
+  /*Configure GPIO pins : Button_LED_3_Pin Button_LED_4_Pin Button_LED_5_Pin Button_LED_7_Pin
+                           Button_LED_8_Pin Button_LED_9_Pin */
+  GPIO_InitStruct.Pin = Button_LED_3_Pin|Button_LED_4_Pin|Button_LED_5_Pin|Button_LED_7_Pin
+                          |Button_LED_8_Pin|Button_LED_9_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Button_LED_13_Pin Button_LED_11_Pin Button_LED_10_Pin Button_LED_0_Pin
-                           DAC_RESET_Pin Button_LED_1D5_Pin Button_LED_2_Pin */
-  GPIO_InitStruct.Pin = Button_LED_13_Pin|Button_LED_11_Pin|Button_LED_10_Pin|Button_LED_0_Pin
-                          |DAC_RESET_Pin|Button_LED_1D5_Pin|Button_LED_2_Pin;
+  /*Configure GPIO pins : Button_LED_13_Pin Button_LED_11_Pin Button_LED_10_Pin DAC_RESET_Pin
+                           Button_LED_1D5_Pin Button_LED_2_Pin Button_LED_0_Pin */
+  GPIO_InitStruct.Pin = Button_LED_13_Pin|Button_LED_11_Pin|Button_LED_10_Pin|DAC_RESET_Pin
+                          |Button_LED_1D5_Pin|Button_LED_2_Pin|Button_LED_0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Button_4_Pin Button_5_Pin */
+  GPIO_InitStruct.Pin = Button_4_Pin|Button_5_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
@@ -532,60 +562,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	switch(GPIO_Pin)
-	{
-	case Button_0_Pin:
-		HAL_GPIO_TogglePin(Button_LED_0_GPIO_Port, Button_LED_0_Pin);
-		break;
-	case Button_1_Pin:
-		HAL_GPIO_TogglePin(Button_LED_1_GPIO_Port, Button_LED_1_Pin);
-		break;
-	case Button_2_Pin:
-		HAL_GPIO_TogglePin(Button_LED_2_GPIO_Port, Button_LED_2_Pin);
-		break;
-	case Button_3_Pin:
-		HAL_GPIO_TogglePin(Button_LED_3_GPIO_Port, Button_LED_3_Pin);
-		break;
-	case Button_4_Pin:
-		HAL_GPIO_TogglePin(Button_LED_4_GPIO_Port, Button_LED_4_Pin);
-		break;
-	case Button_5_Pin:
-		HAL_GPIO_TogglePin(Button_LED_5_GPIO_Port, Button_LED_5_Pin);
-		break;
-	case Button_6_Pin:
-		HAL_GPIO_TogglePin(Button_LED_6_GPIO_Port, Button_LED_6_Pin);
-		break;
-	case Button_7_Pin:
-		HAL_GPIO_TogglePin(Button_LED_7_GPIO_Port, Button_LED_7_Pin);
-		break;
-	case Button_8_Pin:
-		HAL_GPIO_TogglePin(Button_LED_8_GPIO_Port, Button_LED_8_Pin);
-		break;
-	case Button_9_Pin:
-		HAL_GPIO_TogglePin(Button_LED_9_GPIO_Port, Button_LED_9_Pin);
-		break;
-	case Button_10_Pin:
-		HAL_GPIO_TogglePin(Button_LED_10_GPIO_Port, Button_LED_10_Pin);
-		break;
-	case Button_11_Pin:
-		HAL_GPIO_TogglePin(Button_LED_11_GPIO_Port, Button_LED_11_Pin);
-		break;
-	case Button_12_Pin:
-		HAL_GPIO_TogglePin(Button_LED_12_GPIO_Port, Button_LED_12_Pin);
-		break;
-	case Button_13_Pin:
-		HAL_GPIO_TogglePin(Button_LED_13_GPIO_Port, Button_LED_13_Pin);
-		break;
-	case Button_14_Pin:
-		HAL_GPIO_TogglePin(Button_LED_14_GPIO_Port, Button_LED_14_Pin);
-		break;
-	case Button_15_Pin:
-		HAL_GPIO_TogglePin(Button_LED_15_GPIO_Port, Button_LED_15_Pin);
-		break;
-	}
-}
+
 
 /* USER CODE END 4 */
 
