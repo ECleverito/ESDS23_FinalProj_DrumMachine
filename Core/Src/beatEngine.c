@@ -6,10 +6,10 @@
  */
 #include "beatEngine.h"
 
+#include "main.h"
 #include "internalSamples.h"
 #include "buttons.h"
 
-#include "main.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_it.h"
 #include "stm32f4xx_hal_tim.h"
@@ -17,6 +17,7 @@
 #include "stm32f4xx_hal_i2s_ex.h"
 #include "stdbool.h"
 #include "stdio.h"
+//#include "arm_math.h"
 
 extern I2S_HandleTypeDef hi2s3;
 extern TIM_HandleTypeDef htim1;
@@ -35,6 +36,8 @@ uint16_t *currentBeat = NULL;
 
 bool sendingWav = false;
 
+int16_t MixingBuff[7144];
+
 void demoBeatSetup()
 {
 
@@ -45,92 +48,6 @@ void demoBeatSetup()
 	currentBeat = &snareBeatProgramming;
 	*currentBeat = 0b0000100000001000;
 
-}
-
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if(htim==&htim1)
-	{
-		if(currentBeat!=NULL)
-		{
-
-			static uint16_t beatProgrammingBitMask=0x8000;
-
-			if(hatBeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,hat_sample,7144);
-			}
-			else if(kickBeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,kick_sample,7144);
-			}
-			else if(snareBeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,snare_sample,7144);
-			}
-			else if(opHatBeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,opHat_sample,7144);
-			}
-			else if(rimBeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,rim_sample,7144);
-			}
-			else if(tom1BeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,tom1_sample,7144);
-			}
-			else if(tom2BeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,tom2_sample,7144);
-			}
-			else if(tom3BeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,tom2_sample,7144);
-			}
-			else if(trashBeatProgramming & beatProgrammingBitMask)
-			{
-				HAL_I2S_DMAStop(&hi2s3);
-				sendingWav = true;
-				//Start DMA
-				HAL_I2S_Transmit_DMA(&hi2s3,trash_sample,7144);
-			}
-
-			cascadeLEDbeat(beatProgrammingBitMask);
-
-			beatProgrammingBitMask=(beatProgrammingBitMask>>1);
-			if(beatProgrammingBitMask==0)
-			{
-				beatProgrammingBitMask=BEAT_PROGRAMMING_BITMASK_INIT;
-			}
-		}
-
-	}
 }
 
 void selectCurrentBeatProgramming()
@@ -200,6 +117,79 @@ void selectCurrentBeatProgramming()
 	}
 
 	updateLEDs();
+}
+
+void addToMixingBuff(int16_t *sampleData, size_t sampleDataSize)
+{
+
+	for(int i=0;i<sampleDataSize;i++)
+	{
+		MixingBuff[i] += sampleData[i];
+	}
+
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if(htim==&htim1)
+	{
+		if(currentBeat!=NULL)
+		{
+
+			static uint16_t beatProgrammingBitMask=0x8000;
+
+			memset(MixingBuff,0,sizeof(MixingBuff)/sizeof(MixingBuff[0]));
+
+			if(hatBeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(hat_sample,7144);
+			}
+			else if(kickBeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(kick_sample,7144);
+			}
+			else if(snareBeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(snare_sample,7144);
+			}
+			else if(opHatBeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(opHat_sample,7144);
+			}
+			else if(rimBeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(rim_sample,7144);
+			}
+			else if(tom1BeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(tom1_sample,7144);
+			}
+			else if(tom2BeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(tom2_sample,7144);
+			}
+			else if(tom3BeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(tom3_sample,7144);
+			}
+			else if(trashBeatProgramming & beatProgrammingBitMask)
+			{
+				addToMixingBuff(trash_sample,7144);
+			}
+
+			sendingWav = true;
+			HAL_I2S_Transmit_DMA(&hi2s3,MixingBuff,7144);
+
+			cascadeLEDbeat(beatProgrammingBitMask);
+
+			beatProgrammingBitMask=(beatProgrammingBitMask>>1);
+			if(beatProgrammingBitMask==0)
+			{
+				beatProgrammingBitMask=BEAT_PROGRAMMING_BITMASK_INIT;
+			}
+		}
+
+	}
 }
 
 void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)

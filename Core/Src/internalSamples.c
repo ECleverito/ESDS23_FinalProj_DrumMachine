@@ -6,7 +6,7 @@
  */
 #include "internalSamples.h"
 
-const uint16_t hat_sample[7144] = {
+const int16_t hat_sample[7144] = {
 		65427,65427,
 		65345,65345,
 		64818,64818,
@@ -3581,7 +3581,7 @@ const uint16_t hat_sample[7144] = {
 		65531,65525,
 };
 
-const uint16_t kick_sample[] = {
+const int16_t kick_sample[] = {
 		0,3,
 		26,6,
 		20,65534,
@@ -7156,7 +7156,7 @@ const uint16_t kick_sample[] = {
 		65535,4,
 };
 
-const uint16_t opHat_sample[] = {
+const int16_t opHat_sample[] = {
 		61,71,
 		65459,65437,
 		65436,65460,
@@ -10731,7 +10731,7 @@ const uint16_t opHat_sample[] = {
 		65513,65508,
 };
 
-const uint16_t rim_sample[] = {
+const int16_t rim_sample[] = {
 		65457,65458,
 		63,62,
 		170,170,
@@ -14306,7 +14306,7 @@ const uint16_t rim_sample[] = {
 		0,65533,
 };
 
-const uint16_t snare_sample[] = {
+const int16_t snare_sample[] = {
 		163,162,
 		65526,65529,
 		534,530,
@@ -17881,7 +17881,7 @@ const uint16_t snare_sample[] = {
 		65535,3,
 };
 
-const uint16_t tom1_sample[] = {
+const int16_t tom1_sample[] = {
 		3,3,
 		65535,0,
 		9,7,
@@ -21456,7 +21456,7 @@ const uint16_t tom1_sample[] = {
 		1,65530,
 };
 
-const uint16_t tom2_sample[] = {
+const int16_t tom2_sample[] = {
 		1,65535,
 		65529,65526,
 		65523,65525,
@@ -25031,7 +25031,7 @@ const uint16_t tom2_sample[] = {
 		65531,65527,
 };
 
-const uint16_t tom3_sample[] = {
+const int16_t tom3_sample[] = {
 		65534,2,
 		65415,65439,
 		65416,65422,
@@ -28606,7 +28606,7 @@ const uint16_t tom3_sample[] = {
 		7,3,
 };
 
-const uint16_t trash_sample[] = {
+const int16_t trash_sample[] = {
 		1,0,
 		65534,0,
 		2,65535,

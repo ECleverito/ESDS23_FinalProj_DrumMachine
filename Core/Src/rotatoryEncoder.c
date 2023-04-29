@@ -21,7 +21,7 @@ uint16_t tempoEncoderSetpoint;
 
 void init_rotatory_encoder(void)
 {
-	tempoEncoderSetpoint=TIM1->ARR;
+	TIM2->CNT=TIM1->ARR;
 	HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
 }
 
