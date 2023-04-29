@@ -9,9 +9,17 @@
 #define SRC_LCD_H_
 
 
+
+typedef enum {
+	MOVE_UP,
+	MOVE_DOWN
+} movement_type;
+
+
+
 void lcd_init(void);
-void update_change_row(void);
-void update_change_row(void);
+void setPage(movement_type type);
+void rotateMenu(movement_type type);
 
 
 #endif /* SRC_LCD_H_ */

@@ -153,7 +153,7 @@ int main(void)
 //  MX_USART2_UART_Init();
 //  MX_SPI4_Init();
 //  MX_TIM1_Init();
-//  MX_TIM2_Init();
+  MX_TIM2_Init();
 //  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
@@ -193,7 +193,7 @@ int main(void)
 //  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
 //
 //  //Start encoder interrupt-basedness
-//  init_rotatory_encoder();
+  init_rotatory_encoder();
 
   /* USER CODE END 2 */
 
@@ -211,12 +211,6 @@ int main(void)
   {
 //	  playInternalSample(&hi2s3);
     /* USER CODE END WHILE */
-	  update_change_row();
-//	  lcdMenuLevel_2(0);
-
-	  HAL_Delay(2000);
-
-
 
     /* USER CODE BEGIN 3 */
   }
@@ -593,6 +587,12 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : Rot_BTN_Pin */
+  GPIO_InitStruct.Pin = Rot_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(Rot_BTN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPI_SD_CS_Pin */
   GPIO_InitStruct.Pin = SPI_SD_CS_Pin;
