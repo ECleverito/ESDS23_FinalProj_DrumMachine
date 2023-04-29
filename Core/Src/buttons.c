@@ -17,8 +17,6 @@
 extern uint16_t *currentBeat;
 
 #ifdef DRUM_DEBUG
-uint32_t buttonPushStartTime[8];
-bool buttonIntSkipFlag[8];
 #else
 uint32_t buttonPushStartTime[16];
 bool buttonIntSkipFlag[16];
@@ -27,21 +25,15 @@ bool buttonIntSkipFlag[16];
 
 void initButtons()
 {
+
+
+#ifdef DRUM_DEBUG
+#else
 	//Initialize variables used for debouncing
 	memset(buttonPushStartTime,0,BUTTON_COUNT*sizeof(buttonPushStartTime[0]));
 	memset(buttonIntSkipFlag,0,BUTTON_COUNT*sizeof(buttonIntSkipFlag[0]));
 
 	//Turn off all LEDs initially
-#ifdef DRUM_DEBUG
-	HAL_GPIO_WritePin(Button_LED_8_GPIO_Port, Button_LED_8_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Button_LED_9_GPIO_Port, Button_LED_9_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Button_LED_10_GPIO_Port, Button_LED_10_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Button_LED_11_GPIO_Port, Button_LED_11_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Button_LED_12_GPIO_Port, Button_LED_12_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Button_LED_13_GPIO_Port, Button_LED_13_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Button_LED_14_GPIO_Port, Button_LED_14_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Button_LED_15_GPIO_Port, Button_LED_15_Pin, GPIO_PIN_RESET);
-#else
 	HAL_GPIO_WritePin(Button_LED_0_GPIO_Port, Button_LED_0_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(Button_LED_1_GPIO_Port, Button_LED_1_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(Button_LED_2_GPIO_Port, Button_LED_2_Pin, GPIO_PIN_RESET);
@@ -64,35 +56,12 @@ void initButtons()
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+
+#ifdef DRUM_DEBUG
+#else
 	int pinNum;
 	switch(GPIO_Pin)
 	{
-#ifdef DRUM_DEBUG
-	case Button_0_Pin:
-		pinNum=0;
-		break;
-	case Button_1_Pin:
-		pinNum=1;
-		break;
-	case Button_2_Pin:
-		pinNum=2;
-		break;
-	case Button_3_Pin:
-		pinNum=3;
-		break;
-	case Button_4_Pin:
-		pinNum=4;
-		break;
-	case Button_5_Pin:
-		pinNum=5;
-		break;
-	case Button_6_Pin:
-		pinNum=6;
-		break;
-	case Button_7_Pin:
-		pinNum=7;
-		break;
-#else
 	case Button_0_Pin:
 		pinNum=0;
 		break;
@@ -141,7 +110,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	case Button_15_Pin:
 		pinNum=15;
 		break;
-#endif
+
 	}
 
 	if( (HAL_GetTick() - buttonPushStartTime[pinNum]) > DEBOUNCE_DELAY) //10ms
@@ -160,33 +129,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		switch(GPIO_Pin)
 		{
 
-#ifdef DRUM_DEBUG
-		case Button_8_Pin:
-			HAL_GPIO_TogglePin(Button_LED_8_GPIO_Port, Button_LED_8_Pin);
-			break;
-		case Button_9_Pin:
-			HAL_GPIO_TogglePin(Button_LED_9_GPIO_Port, Button_LED_9_Pin);
-			break;
-		case Button_10_Pin:
-			HAL_GPIO_TogglePin(Button_LED_10_GPIO_Port, Button_LED_10_Pin);
-			break;
-		case Button_11_Pin:
-			HAL_GPIO_TogglePin(Button_LED_11_GPIO_Port, Button_LED_11_Pin);
-			break;
-		case Button_12_Pin:
-			HAL_GPIO_TogglePin(Button_LED_12_GPIO_Port, Button_LED_12_Pin);
-			break;
-		case Button_13_Pin:
-			HAL_GPIO_TogglePin(Button_LED_13_GPIO_Port, Button_LED_13_Pin);
-			break;
-		case Button_14_Pin:
-			HAL_GPIO_TogglePin(Button_LED_14_GPIO_Port, Button_LED_14_Pin);
-			break;
-		case Button_15_Pin:
-			HAL_GPIO_TogglePin(Button_LED_15_GPIO_Port, Button_LED_15_Pin);
-			break;
-		}
-#else
 		case Button_0_Pin:
 			HAL_GPIO_TogglePin(Button_LED_0_GPIO_Port, Button_LED_0_Pin);
 			break;
@@ -236,72 +178,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			HAL_GPIO_TogglePin(Button_LED_15_GPIO_Port, Button_LED_15_Pin);
 			break;
 		}
-#endif
 	}
+#endif
+
 }
 
 void cascadeLEDbeat(uint16_t beatProgrammingBitMask)
 {
+
+#ifdef DRUM_DEBUG
+#else
 	switch(beatProgrammingBitMask)
 	{
-#ifdef DRUM_DEBUG
-	case 0x0080:
-		HAL_GPIO_WritePin(Button_LED_8_GPIO_Port, Button_LED_8_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0100))
-		{
-			HAL_GPIO_WritePin(Button_LED_7_GPIO_Port, Button_LED_7_Pin, GPIO_PIN_RESET);
-		}
-		break;
-	case 0x0040:
-		HAL_GPIO_WritePin(Button_LED_9_GPIO_Port, Button_LED_9_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0080))
-		{
-			HAL_GPIO_WritePin(Button_LED_8_GPIO_Port, Button_LED_8_Pin, GPIO_PIN_RESET);
-		}
-		break;
-	case 0x0020:
-		HAL_GPIO_WritePin(Button_LED_10_GPIO_Port, Button_LED_10_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0040))
-		{
-			HAL_GPIO_WritePin(Button_LED_9_GPIO_Port, Button_LED_9_Pin, GPIO_PIN_RESET);
-		}
-		break;
-	case 0x0010:
-		HAL_GPIO_WritePin(Button_LED_11_GPIO_Port, Button_LED_11_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0020))
-		{
-			HAL_GPIO_WritePin(Button_LED_10_GPIO_Port, Button_LED_10_Pin, GPIO_PIN_RESET);
-		}
-		break;
-	case 0x0008:
-		HAL_GPIO_WritePin(Button_LED_12_GPIO_Port, Button_LED_12_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0010))
-		{
-			HAL_GPIO_WritePin(Button_LED_11_GPIO_Port, Button_LED_11_Pin, GPIO_PIN_RESET);
-		}
-		break;
-	case 0x0004:
-		HAL_GPIO_WritePin(Button_LED_13_GPIO_Port, Button_LED_13_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0008))
-		{
-			HAL_GPIO_WritePin(Button_LED_12_GPIO_Port, Button_LED_12_Pin, GPIO_PIN_RESET);
-		}
-		break;
-	case 0x0002:
-		HAL_GPIO_WritePin(Button_LED_14_GPIO_Port, Button_LED_14_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0004))
-		{
-			HAL_GPIO_WritePin(Button_LED_13_GPIO_Port, Button_LED_13_Pin, GPIO_PIN_RESET);
-		}
-		break;
-	case 0x0001:
-		HAL_GPIO_WritePin(Button_LED_15_GPIO_Port, Button_LED_15_Pin, GPIO_PIN_SET);
-		if(!(*currentBeat & 0x0002))
-		{
-			HAL_GPIO_WritePin(Button_LED_14_GPIO_Port, Button_LED_14_Pin, GPIO_PIN_RESET);
-		}
-		break;
-#else
 	case 0x8000:
 		HAL_GPIO_WritePin(Button_LED_0_GPIO_Port, Button_LED_0_Pin, GPIO_PIN_SET);
 		if(!(*currentBeat & 0x0001))
@@ -414,7 +302,8 @@ void cascadeLEDbeat(uint16_t beatProgrammingBitMask)
 			HAL_GPIO_WritePin(Button_LED_14_GPIO_Port, Button_LED_14_Pin, GPIO_PIN_RESET);
 		}
 		break;
-#endif
 	}
+#endif
+
 }
 
