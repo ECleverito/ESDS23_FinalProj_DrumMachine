@@ -27,6 +27,7 @@
 #include "beatEngine.h"
 #include "buttons.h"
 #include "rotatoryEncoder.h"
+#include "lcd.h"
 
 #include "stdio.h"
 #include "string.h"
@@ -212,6 +213,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  if(HAL_GPIO_ReadPin(Rot_BTN_GPIO_Port, Rot_BTN_Pin) == GPIO_PIN_RESET)
+	  {
+		  buttonPressed();
+	  }
+
   }
   /* USER CODE END 3 */
 }
@@ -590,7 +597,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : Rot_BTN_Pin */
   GPIO_InitStruct.Pin = Rot_BTN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(Rot_BTN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPI_SD_CS_Pin */

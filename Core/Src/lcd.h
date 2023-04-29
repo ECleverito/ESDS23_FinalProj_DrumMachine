@@ -20,6 +20,7 @@ typedef enum {
 void lcd_init(void);
 void setPage(movement_type type);
 void rotateMenu(movement_type type);
+void buttonPressed(void);
 
 
 #endif /* SRC_LCD_H_ */

@@ -29,7 +29,7 @@ typedef enum {
 	PAGE_3
 } Page_number;
 
-uint8_t currentLevel = PAGE_2;
+uint8_t currentLevel = PAGE_1;
 
 
 typedef enum {
@@ -71,7 +71,8 @@ void lcdMenuLevel_1(int itr, movement_type type);
 void lcdMenuLevel_2(int itr, movement_type type);
 
 
-void lcd_init()
+
+void defaultPage1_display()
 {
     SSD1306_Init(); // initialize the display
 
@@ -81,12 +82,25 @@ void lcd_init()
 	/* Update screen */
 	SSD1306_UpdateScreen();
 
+	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
+	SSD1306_Puts ("Start prog patt", &Font_7x10, 1); // print
 
-//	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
-//	SSD1306_Puts ("Start prog patt", &Font_7x10, 1); // print
-//
-//	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
-//	SSD1306_Puts ("Play prog patt", &Font_7x10, 1); // print
+	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
+	SSD1306_Puts ("Play prog patt", &Font_7x10, 1); // print
+
+    SSD1306_UpdateScreen(); // update screen
+}
+
+
+void defaultPage2_display()
+{
+    SSD1306_Init(); // initialize the display
+
+	/* Clear screen */
+	SSD1306_Fill(0);
+
+	/* Update screen */
+	SSD1306_UpdateScreen();
 
 
 	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
@@ -104,8 +118,13 @@ void lcd_init()
 	SSD1306_GotoXY (5, rowLocationValue[4]);
 	SSD1306_Puts ("      snare", &Font_7x10, 1);
 
-
     SSD1306_UpdateScreen(); // update screen
+}
+
+
+void lcd_init()
+{
+	defaultPage1_display();
 }
 
 
@@ -121,11 +140,13 @@ void buttonPressed()
 	{
 		if(currentSelectedOption_Page1 == START_PROG_SOUNDS)
 		{
-			currentLevel == PAGE_2;
+			currentLevel = PAGE_2;
+
+			defaultPage2_display();
 		}
 		else if(currentSelectedOption_Page1 == PLAY_PROG_SOUNDS)
 		{
-			currentLevel == PAGE_3;
+//			currentLevel = PAGE_3;
 		}
 	}
 	else if(currentLevel == PAGE_2)
@@ -133,6 +154,8 @@ void buttonPressed()
 		if(currentSelectedOption_Page2 == BACK)
 		{
 			currentLevel = PAGE_1;
+
+			defaultPage1_display();
 		}
 	}
 }
@@ -160,6 +183,8 @@ void rotateMenu(movement_type type)
 				}
 			}
 
+			currentSelectedOption_Page1 = page1_highlited_option;
+
 //			page1_highlited_option = (page1_highlited_option + 1) % OPTION_COUNT_PAGE_1;
 
 			lcdMenuLevel_1(page1_highlited_option, type);
@@ -182,6 +207,9 @@ void rotateMenu(movement_type type)
 					page2_highlited_option--;
 				}
 			}
+
+			currentSelectedOption_Page2 = page2_highlited_option;
+
 //			page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
 
 			lcdMenuLevel_2(page2_highlited_option, type);

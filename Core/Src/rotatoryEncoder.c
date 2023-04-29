@@ -30,7 +30,7 @@ void init_rotatory_encoder(void)
 	HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
 
 	// for lcd rotary
-	TIM2->CNT = 30000;
+	TIM3->CNT = 30000;
 	prev_pos_value = 30000;
 }
 
