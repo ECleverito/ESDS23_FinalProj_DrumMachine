@@ -25,4 +25,6 @@ void initButtons();
 
 void cascadeLEDbeat(uint16_t beatProgrammingBitMask);
 
+void updateLEDs();
+
 #endif /* SRC_BUTTONS_H_ */

@@ -8,6 +8,7 @@
 #include "SD_card.h"
 
 #include "internalSamples.h"
+#include "beatEngine.h"
 
 #include "stdio.h"
 #include "string.h"
@@ -22,7 +23,6 @@ const char samplePath[] = "/Samples";
 uint16_t dataBuff[BUFF_SIZE];
 
 bool sendingWavSD = false;
-//uint16_t zeroData;
 
 //Example from FatFs lib creator elm_chan used for this implementation
 //(http://elm-chan.org/fsw/ff/doc/readdir.html)
@@ -262,6 +262,7 @@ void playInternalSample(I2S_HandleTypeDef *i2s_handle)
 
 	}
 }
+
 
 
 

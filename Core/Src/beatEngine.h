@@ -8,7 +8,7 @@
 #ifndef SRC_BEATENGINE_H_
 #define SRC_BEATENGINE_H_
 
-#define DRUM_DEBUG
+#define DRUM_DEBUG	1
 
 void demoBeatSetup();
 
