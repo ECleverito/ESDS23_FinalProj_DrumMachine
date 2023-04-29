@@ -6,7 +6,7 @@
  */
 
 #include "rotatoryEncoder.h"
-
+#include "lcd.h"
 #include "main.h"
 
 #include "stm32f4xx_it.h"
@@ -40,7 +40,22 @@ void rotatory_sensor_sense(void)
 	}
 
 	TIM1->ARR = TIM2->CNT;
-
 }
 
+uint32_t prev_pos_value = 0;
+
+//void rotatory_sensor_lcd(void)
+//{
+//	if(prev_pos_value > TIM3->CNT)
+//	{
+//		// here means rotation happened
+//		update_change_row(1);
+//	}
+//	else if(prev_pos_value < TIM3->CNT)
+//	{
+//		// here means rotation happened
+//		update_change_row(1);
+//	}
+//	prev_pos_value = TIM3->CNT;
+//}
 

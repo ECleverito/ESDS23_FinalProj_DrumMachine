@@ -31,6 +31,7 @@
 #include "stdio.h"
 #include "string.h"
 
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +58,7 @@ SPI_HandleTypeDef hspi4;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart2;
 
@@ -77,6 +79,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_SPI4_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -143,62 +146,77 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
+//  MX_DMA_Init();
   MX_I2C1_Init();
-  MX_I2S3_Init();
-  MX_FATFS_Init();
-  MX_USART2_UART_Init();
-  MX_SPI4_Init();
-  MX_TIM1_Init();
-  MX_TIM2_Init();
+//  MX_I2S3_Init();
+//  MX_FATFS_Init();
+//  MX_USART2_UART_Init();
+//  MX_SPI4_Init();
+//  MX_TIM1_Init();
+//  MX_TIM2_Init();
+//  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   //Reset DAC with RESET line
-  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_RESET);
-  HAL_Delay(100);
-  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
-
-  dac_powerup_seq(&hi2c1);
-  readDACreg(&hi2c1, CHIP_ID_AND_REV_REG, 1);
-  configureDAC(&hi2c1);
-
-  //Set LRCLK low to begin
-  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
-
-  FATFS fs;
-  FRESULT res;
-
-  res = f_mount(&fs, "", 1);
-
-  if(res!=FR_OK)
-  {
-	  printf("Error in mounting SD card!\r\n");
-  }
-
-  //Start sending zeros to DAC
-  HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
-
-  HAL_TIM_Base_Start_IT(&htim1);
-
-  //Initialize LED buttons
-  initButtons();
-
-  demoBeatSetup();
-
-  //Set LEDs low
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
-
-  //Start encoder interrupt-basedness
-  init_rotatory_encoder();
+//  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_RESET);
+//  HAL_Delay(100);
+//  HAL_GPIO_WritePin(DAC_RESET_GPIO_Port, DAC_RESET_Pin, GPIO_PIN_SET);
+//
+//  dac_powerup_seq(&hi2c1);
+//  readDACreg(&hi2c1, CHIP_ID_AND_REV_REG, 1);
+//  configureDAC(&hi2c1);
+//
+//  //Set LRCLK low to begin
+//  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+//
+//  FATFS fs;
+//  FRESULT res;
+//
+//  res = f_mount(&fs, "", 1);
+//
+//  if(res!=FR_OK)
+//  {
+//	  printf("Error in mounting SD card!\r\n");
+//  }
+//
+//  //Start sending zeros to DAC
+//  HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
+//
+//  HAL_TIM_Base_Start_IT(&htim1);
+//
+//  //Initialize LED buttons
+//  initButtons();
+//
+//  demoBeatSetup();
+//
+//  //Set LEDs low
+//  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+//
+//  //Start encoder interrupt-basedness
+//  init_rotatory_encoder();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+/* USER CODE BEGIN 2 */
+
+  lcd_init();
+
+
+
+  /* USER CODE END 2 */
+
   while (1)
   {
-	  playInternalSample(&hi2s3);
+//	  playInternalSample(&hi2s3);
     /* USER CODE END WHILE */
+	  update_change_row();
+//	  lcdMenuLevel_2(0);
+
+	  HAL_Delay(2000);
+
+
 
     /* USER CODE BEGIN 3 */
   }
@@ -271,7 +289,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -453,6 +471,55 @@ static void MX_TIM2_Init(void)
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_Encoder_InitTypeDef sConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC1Filter = 0;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC2Filter = 0;
+  if (HAL_TIM_Encoder_Init(&htim3, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
 
 }
 
