@@ -74,6 +74,38 @@ void lcdMenuLevel_2(int itr, movement_type type);
 void lcd_init()
 {
     SSD1306_Init(); // initialize the display
+
+	/* Clear screen */
+	SSD1306_Fill(0);
+
+	/* Update screen */
+	SSD1306_UpdateScreen();
+
+
+//	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
+//	SSD1306_Puts ("Start prog patt", &Font_7x10, 1); // print
+//
+//	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
+//	SSD1306_Puts ("Play prog patt", &Font_7x10, 1); // print
+
+
+	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
+	SSD1306_Puts ("      Hat", &Font_7x10, 1); // print
+
+	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
+	SSD1306_Puts ("      Kick", &Font_7x10, 1); // print
+
+	SSD1306_GotoXY (5, rowLocationValue[2]);
+	SSD1306_Puts ("      opHat", &Font_7x10, 1);
+
+	SSD1306_GotoXY (5, rowLocationValue[3]);
+	SSD1306_Puts ("      rim", &Font_7x10, 1);
+
+	SSD1306_GotoXY (5, rowLocationValue[4]);
+	SSD1306_Puts ("      snare", &Font_7x10, 1);
+
+
+    SSD1306_UpdateScreen(); // update screen
 }
 
 
@@ -85,29 +117,72 @@ void setPage(movement_type type)
 
 void buttonPressed()
 {
-	if(currentLevel == PAGE_1) {
-
+	if(currentLevel == PAGE_1)
+	{
+		if(currentSelectedOption_Page1 == START_PROG_SOUNDS)
+		{
+			currentLevel == PAGE_2;
+		}
+		else if(currentSelectedOption_Page1 == PLAY_PROG_SOUNDS)
+		{
+			currentLevel == PAGE_3;
+		}
 	}
-	else if(currentLevel == PAGE_2) {
-
+	else if(currentLevel == PAGE_2)
+	{
+		if(currentSelectedOption_Page2 == BACK)
+		{
+			currentLevel = PAGE_1;
+		}
 	}
 }
 
 
 void rotateMenu(movement_type type)
 {
-	switch (currentLevel) {
-
+	switch (currentLevel)
+	{
 		case PAGE_1:
 
-			page1_highlited_option = (page1_highlited_option + 1) % OPTION_COUNT_PAGE_1;
+			if(type == MOVE_UP)
+			{
+				page1_highlited_option = (page1_highlited_option + 1) % OPTION_COUNT_PAGE_1;
+			}
+			else if(type == MOVE_DOWN)
+			{
+				if(page1_highlited_option == 0)
+				{
+					page1_highlited_option = OPTION_COUNT_PAGE_1 - 1;
+				}
+				else
+				{
+					page1_highlited_option--;
+				}
+			}
+
+//			page1_highlited_option = (page1_highlited_option + 1) % OPTION_COUNT_PAGE_1;
 
 			lcdMenuLevel_1(page1_highlited_option, type);
 			break;
 
 		case PAGE_2:
 
-			page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
+			if(type == MOVE_UP)
+			{
+				page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
+			}
+			else if(type == MOVE_DOWN) // clockwise
+			{
+				if(page2_highlited_option == 0)
+				{
+					page2_highlited_option = OPTION_COUNT_PAGE_2 - 1;
+				}
+				else
+				{
+					page2_highlited_option--;
+				}
+			}
+//			page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
 
 			lcdMenuLevel_2(page2_highlited_option, type);
 			break;
@@ -154,7 +229,7 @@ void perfromMovement(int* itr, movement_type type, Page_number num)
 //	return itr;
 }
 
-
+// PAGE 1
 void lcdMenuLevel_1(int itr, movement_type type)
 {
 	/* Clear screen */
@@ -174,101 +249,162 @@ void lcdMenuLevel_1(int itr, movement_type type)
 
 
     SSD1306_UpdateScreen(); // update screen
-
-    HAL_Delay(2000);
 }
 
-
+// PAGE 2  ->  Start Programming patterns
 void lcdMenuLevel_2(int itr, movement_type type)
 {
+	int pos = 0;
+
 	/* Clear screen */
 	SSD1306_Fill(0);
 
 	/* Update screen */
 	SSD1306_UpdateScreen();
 
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+	while(pos < TOTAL_OPTIONS_CAN_BE_DISPLYED)
 	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
-		SSD1306_Puts ("      Hat", &Font_7x10, 1); // print
+		switch(itr)  //start printing from the highlighted option
+		{
+			case 0:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
+				SSD1306_Puts ("      Hat", &Font_7x10, 1); // print
+				break;
+
+			case 1:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
+				SSD1306_Puts ("      Kick", &Font_7x10, 1); // print
+				break;
+
+			case 2:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      opHat", &Font_7x10, 1);
+				break;
+
+			case 3:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      rim", &Font_7x10, 1);
+				break;
+
+			case 4:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      snare", &Font_7x10, 1);
+				break;
+
+			case 5:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      tom1", &Font_7x10, 1);
+				break;
+
+			case 6:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      tom2", &Font_7x10, 1);
+				break;
+
+			case 7:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      tom3", &Font_7x10, 1);
+				break;
+
+			case 8:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      trash", &Font_7x10, 1);
+				break;
+
+			case 9:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("     <back>", &Font_7x10, 1);
+				break;
+		}
+
+		itr = (itr + 1) % OPTION_COUNT_PAGE_2;
+
+		/* Update screen */
+		SSD1306_UpdateScreen();
 	}
 
-	perfromMovement(&itr, type, PAGE_2);
 
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
-		SSD1306_Puts ("      Kick", &Font_7x10, 1); // print
-	}
 
-	perfromMovement(&itr, type, PAGE_2);
 
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      opHat", &Font_7x10, 1);
-	}
-
-	perfromMovement(&itr, type, PAGE_2);
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      rim", &Font_7x10, 1);
-	}
-
-	perfromMovement(&itr, type, PAGE_2);
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      snare", &Font_7x10, 1);
-	}
-
-	perfromMovement(&itr, type, PAGE_2);
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      tom1", &Font_7x10, 1);
-	}
-
-	perfromMovement(&itr, type, PAGE_2);
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      tom2", &Font_7x10, 1);
-	}
-
-	perfromMovement(&itr, type, PAGE_2);
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      tom3", &Font_7x10, 1);
-	}
-
-	perfromMovement(&itr, type, PAGE_2);
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      trash", &Font_7x10, 1);
-	}
-
-	perfromMovement(&itr, type, PAGE_2);
-
-	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-	{
-		SSD1306_GotoXY (5, rowLocationValue[itr]);
-		SSD1306_Puts ("      back", &Font_7x10, 1);
-	}
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
+//		SSD1306_Puts ("      Hat", &Font_7x10, 1); // print
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
+//		SSD1306_Puts ("      Kick", &Font_7x10, 1); // print
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      opHat", &Font_7x10, 1);
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      rim", &Font_7x10, 1);
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      snare", &Font_7x10, 1);
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      tom1", &Font_7x10, 1);
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      tom2", &Font_7x10, 1);
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      tom3", &Font_7x10, 1);
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      trash", &Font_7x10, 1);
+//	}
+//
+//	perfromMovement(&itr, type, PAGE_2);
+//
+//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
+//	{
+//		SSD1306_GotoXY (5, rowLocationValue[itr]);
+//		SSD1306_Puts ("      back", &Font_7x10, 1);
+//	}
 
     SSD1306_UpdateScreen(); // update screen
-
-    HAL_Delay(2000);
 }
 
 
