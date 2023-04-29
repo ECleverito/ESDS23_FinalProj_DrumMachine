@@ -9,8 +9,15 @@
 #define SRC_BUTTONS_H_
 
 #include "stdint.h"
+#include "beatEngine.h"
 
+#ifdef DRUM_DEBUG
+#define BUTTON_COUNT 	8
+#define BEAT_PROGRAMMING_BITMASK_INIT	0x80
+#else
 #define BUTTON_COUNT	16
+#define BEAT_PROGRAMMING_BITMASK_INIT	0x8000
+#endif
 
 #define DEBOUNCE_DELAY	100
 

@@ -83,7 +83,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		beatProgrammingBitMask=(beatProgrammingBitMask>>1);
 		if(beatProgrammingBitMask==0)
 		{
-			beatProgrammingBitMask=0x8000;
+			beatProgrammingBitMask=BEAT_PROGRAMMING_BITMASK_INIT;
 		}
 
 	}
