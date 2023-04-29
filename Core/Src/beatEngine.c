@@ -40,6 +40,7 @@ bool sendingWav = false;
 bool noBeat = true;
 
 int16_t MixingBuff[7144];
+int16_t **samplePointers[10];
 
 void demoBeatSetup()
 {
@@ -170,6 +171,37 @@ void addToMixingBuff(int16_t *sampleData, size_t sampleDataSize)
 		else if(res<INT16_MIN)
 		{
 			MixingBuff[i]=INT16_MIN;
+		}
+		else
+		{
+			MixingBuff[i]=res;
+		}
+
+	}
+}
+
+void addToMixingBuff_nSamples(int16_t **samplePointers, size_t sampleDataSize, uint8_t sampleNum)
+{
+	int dataHolder;
+
+	for(int x=0;x<sampleDataSize;x++)
+	{
+		for(int y=0;y<sampleNum;y++)
+		{
+			dataHolder+=(*samplePointers[x]/sampleNum);
+		}
+
+		if(dataHolder>INT16_MAX)
+		{
+			MixingBuff[x]=INT16_MAX;
+		}
+		else if(dataHolder<INT16_MIN)
+		{
+			MixingBuff[x]=INT16_MIN;
+		}
+		else
+		{
+			MixingBuff[x]=dataHolder;
 		}
 	}
 }
