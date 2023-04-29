@@ -17,6 +17,7 @@
 #include "stm32f4xx_hal_i2s_ex.h"
 #include "stdbool.h"
 #include "stdio.h"
+#include "string.h"
 //#include "arm_math.h"
 //Considered using vector addition methods from CMSIS libs but these
 //require 32-bit float format sample data
@@ -40,7 +41,7 @@ bool sendingWav = false;
 bool noBeat = true;
 
 int16_t MixingBuff[7144];
-int16_t **samplePointers[10];
+int16_t *samplePointers[10];
 
 void demoBeatSetup()
 {
@@ -159,7 +160,7 @@ void addToMixingBuff_Vttoth(int16_t *sampleData, size_t sampleDataSize)
 
 }
 
-void addToMixingBuff(int16_t *sampleData, size_t sampleDataSize)
+void addToMixingBuff_primitive(int16_t *sampleData, size_t sampleDataSize)
 {
 	for(int i=0;i<sampleDataSize;i++)
 	{
@@ -217,7 +218,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			int numSamps=0;
 			static uint16_t beatProgrammingBitMask=0x8000;
 
-			memset(MixingBuff,0,sizeof(MixingBuff)/sizeof(MixingBuff[0]));
+			memset(MixingBuff,0,sizeof(MixingBuff)/sizeof(MixingBuff[0])*2);
 
 			if(hatBeatProgramming & beatProgrammingBitMask)
 			{
@@ -228,8 +229,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(hat_sample,7144);
+					samplePointers[numSamps]=hat_sample;
 				}
+
 				noBeat=false;
 				numSamps++;
 			}
@@ -242,7 +244,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(kick_sample,7144);
+					samplePointers[numSamps]=kick_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -256,7 +258,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(snare_sample,7144);
+					samplePointers[numSamps]=snare_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -270,7 +272,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(opHat_sample,7144);
+					samplePointers[numSamps]=opHat_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -284,7 +286,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(rim_sample,7144);
+					samplePointers[numSamps]=rim_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -298,7 +300,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(tom1_sample,7144);
+					samplePointers[numSamps]=tom1_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -312,7 +314,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(tom2_sample,7144);
+					samplePointers[numSamps]=tom2_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -326,7 +328,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(tom3_sample,7144);
+					samplePointers[numSamps]=tom3_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -340,7 +342,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 				else
 				{
-					addToMixingBuff(trash_sample,7144);
+					samplePointers[numSamps]=trash_sample;
 				}
 				noBeat=false;
 				numSamps++;
@@ -349,6 +351,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			if(!noBeat)
 			{
 				noBeat = true;
+				addToMixingBuff_nSamples(samplePointers, 7144, numSamps);
 				sendingWav = true;
 				HAL_I2S_DMAStop(&hi2s3);
 				HAL_I2S_Transmit_DMA(&hi2s3,MixingBuff,7144);

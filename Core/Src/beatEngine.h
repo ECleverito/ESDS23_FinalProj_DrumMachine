@@ -11,13 +11,13 @@
 #include "stdint.h"
 #include "stddef.h"
 
-#define DRUM_DEBUG	1
+//#define DRUM_DEBUG	1
 
 void demoBeatSetup();
 
 void selectCurrentBeatProgramming();
 
-void addToMixingBuff(int16_t *sampleData, size_t sampleDataSize);
+void addToMixingBuff_primitive(int16_t *sampleData, size_t sampleDataSize);
 
 void addToMixingBuff_nSamples(int16_t **samplePointers, size_t sampleDataSize, uint8_t sampleNum);
 
