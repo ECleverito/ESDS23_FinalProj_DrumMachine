@@ -18,6 +18,8 @@
 #include "stdbool.h"
 #include "stdio.h"
 //#include "arm_math.h"
+//Considered using vector addition methods from CMSIS libs but these
+//require 32-bit float format sample data
 
 extern I2S_HandleTypeDef hi2s3;
 extern TIM_HandleTypeDef htim1;
@@ -121,14 +123,55 @@ void selectCurrentBeatProgramming()
 	updateLEDs();
 }
 
-void addToMixingBuff(int16_t *sampleData, size_t sampleDataSize)
+void addToMixingBuff_Vttoth(int16_t *sampleData, size_t sampleDataSize)
 {
+	//Example from https://stackoverflow.com/questions/12089662/mixing-16-bit-linear-pcm-streams-and-avoiding-clipping-overflow
 
 	for(int i=0;i<sampleDataSize;i++)
 	{
-		MixingBuff[i] += sampleData[i];
+		int a = MixingBuff[i];
+		int b = sampleData[i];
+		int res;
+		// Make both samples unsigned (0..65535)
+		a+=32768;
+		b+=32768;
+
+		// Pick the equation
+		if((a < 32768) || (b < 32768))
+		{
+		    // Viktor's first equation when both sources are "quiet"
+		    // (i.e. less than middle of the dynamic range)
+			res = (a * b) / 32768;
+		}
+		else
+		{
+		    // Viktor's second equation when one or both sources are loud
+			res = (2 * (a + b)) - (a * b) - 65536;
+		}
+
+		// Output is unsigned (0..65536) so convert back to signed (-32768..32767)
+		if (res == 65536) res = 65535;
+		MixingBuff[i] = (res-32768);
 	}
 
+
+
+}
+
+void addToMixingBuff(int16_t *sampleData, size_t sampleDataSize)
+{
+	for(int i=0;i<sampleDataSize;i++)
+	{
+		int res = (MixingBuff[i]/2+sampleData[i]/2);
+		if(res>INT16_MAX)
+		{
+			MixingBuff[i]=INT16_MAX;
+		}
+		else if(res<INT16_MIN)
+		{
+			MixingBuff[i]=INT16_MIN;
+		}
+	}
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -138,54 +181,137 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		if(currentBeat!=NULL)
 		{
 
+			bool firstSample = true;
+			int numSamps=0;
 			static uint16_t beatProgrammingBitMask=0x8000;
 
 			memset(MixingBuff,0,sizeof(MixingBuff)/sizeof(MixingBuff[0]));
 
 			if(hatBeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(hat_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,hat_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(hat_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(kickBeatProgramming & beatProgrammingBitMask)
+			if(kickBeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(kick_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,kick_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(kick_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(snareBeatProgramming & beatProgrammingBitMask)
+			if(snareBeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(snare_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,snare_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(snare_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(opHatBeatProgramming & beatProgrammingBitMask)
+			if(opHatBeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(opHat_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,opHat_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(opHat_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(rimBeatProgramming & beatProgrammingBitMask)
+			if(rimBeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(rim_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,rim_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(rim_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(tom1BeatProgramming & beatProgrammingBitMask)
+			if(tom1BeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(tom1_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,tom1_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(tom1_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(tom2BeatProgramming & beatProgrammingBitMask)
+			if(tom2BeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(tom2_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,tom2_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(tom2_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(tom3BeatProgramming & beatProgrammingBitMask)
+			if(tom3BeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(tom3_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,tom3_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(tom3_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
-			else if(trashBeatProgramming & beatProgrammingBitMask)
+			if(trashBeatProgramming & beatProgrammingBitMask)
 			{
-				addToMixingBuff(trash_sample,7144);
+				if(firstSample)
+				{
+					memcpy(MixingBuff,trash_sample,7144*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(trash_sample,7144);
+				}
 				noBeat=false;
+				numSamps++;
 			}
 
 			if(!noBeat)
