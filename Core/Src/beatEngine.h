@@ -11,7 +11,7 @@
 #include "stdint.h"
 #include "stddef.h"
 
-//#define DRUM_DEBUG	1
+#define DRUM_DEBUG	1
 
 void demoBeatSetup();
 

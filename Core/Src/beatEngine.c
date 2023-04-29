@@ -35,6 +35,7 @@ uint16_t trashBeatProgramming = 0;
 uint16_t *currentBeat = NULL;
 
 bool sendingWav = false;
+bool noBeat = true;
 
 int16_t MixingBuff[7144];
 
@@ -42,7 +43,8 @@ void demoBeatSetup()
 {
 
 	//Set up beat programming demo
-	*currentBeat = 0b0111011101110111;
+	currentBeat = &hatBeatProgramming;
+	*currentBeat = 0b1111011101110111;
 	currentBeat = &kickBeatProgramming;
 	*currentBeat = 0b1000000010000000;
 	currentBeat = &snareBeatProgramming;
@@ -143,42 +145,56 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			if(hatBeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(hat_sample,7144);
+				noBeat=false;
 			}
 			else if(kickBeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(kick_sample,7144);
+				noBeat=false;
 			}
 			else if(snareBeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(snare_sample,7144);
+				noBeat=false;
 			}
 			else if(opHatBeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(opHat_sample,7144);
+				noBeat=false;
 			}
 			else if(rimBeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(rim_sample,7144);
+				noBeat=false;
 			}
 			else if(tom1BeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(tom1_sample,7144);
+				noBeat=false;
 			}
 			else if(tom2BeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(tom2_sample,7144);
+				noBeat=false;
 			}
 			else if(tom3BeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(tom3_sample,7144);
+				noBeat=false;
 			}
 			else if(trashBeatProgramming & beatProgrammingBitMask)
 			{
 				addToMixingBuff(trash_sample,7144);
+				noBeat=false;
 			}
 
-			sendingWav = true;
-			HAL_I2S_Transmit_DMA(&hi2s3,MixingBuff,7144);
+			if(!noBeat)
+			{
+				noBeat = true;
+				sendingWav = true;
+				HAL_I2S_DMAStop(&hi2s3);
+				HAL_I2S_Transmit_DMA(&hi2s3,MixingBuff,7144);
+			}
 
 			cascadeLEDbeat(beatProgrammingBitMask);
 
