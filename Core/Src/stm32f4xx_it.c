@@ -241,6 +241,8 @@ void EXTI2_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(Button_2_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
 
+  rotatory_sensor_sense();
+
   /* USER CODE END EXTI2_IRQn 1 */
 }
 
