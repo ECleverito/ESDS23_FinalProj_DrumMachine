@@ -18,6 +18,7 @@
 
 #define OPTION_COUNT_PAGE_1					2
 #define OPTION_COUNT_PAGE_2					10
+#define OPTION_COUNT_PAGE_3					5
 #define TOTAL_OPTIONS_CAN_BE_DISPLYED		5
 
 
@@ -51,15 +52,26 @@ typedef enum {
 	TOM2,
 	TOM3,
 	TRASH,
-	BACK
+	PAGE2_BACK
 } Page2_options;
 
 Page2_options currentSelectedOption_Page2 = HAT;
 
 
+typedef enum {
+	TUNAK_TUNAK,
+	PP_oo_OO,
+	PRETTY_BOY,
+	BWAHAAA,
+	PAGE3_BACK
+} Page3_options;
+
+Page3_options currentSelectedOption_Page3 = TUNAK_TUNAK;
+
 
 uint8_t page1_highlited_option = 0;
 uint8_t page2_highlited_option = 0;
+uint8_t page3_highlited_option = 0;
 
 
 int rowLocationValue[] = {
@@ -69,7 +81,7 @@ int rowLocationValue[] = {
 
 void lcdMenuLevel_1(int itr, movement_type type);
 void lcdMenuLevel_2(int itr, movement_type type);
-
+void lcdMenuLevel_3(int itr, movement_type type);
 
 
 void defaultPage1_display()
@@ -122,6 +134,36 @@ void defaultPage2_display()
 }
 
 
+void defaultPage3_display()
+{
+    SSD1306_Init(); // initialize the display
+
+	/* Clear screen */
+	SSD1306_Fill(0);
+
+	/* Update screen */
+	SSD1306_UpdateScreen();
+
+
+	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
+	SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1); // print
+
+	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
+	SSD1306_Puts ("PP oo OO", &Font_7x10, 1); // print
+
+	SSD1306_GotoXY (5, rowLocationValue[2]);
+	SSD1306_Puts ("PRETTY BOY", &Font_7x10, 1);
+
+	SSD1306_GotoXY (5, rowLocationValue[3]);
+	SSD1306_Puts ("BWAHAAA", &Font_7x10, 1);
+
+	SSD1306_GotoXY (5, rowLocationValue[4]);
+	SSD1306_Puts ("<back>", &Font_7x10, 1);
+
+    SSD1306_UpdateScreen(); // update screen
+}
+
+
 void lcd_init()
 {
 	defaultPage1_display();
@@ -146,12 +188,22 @@ void buttonPressed()
 		}
 		else if(currentSelectedOption_Page1 == PLAY_PROG_SOUNDS)
 		{
-//			currentLevel = PAGE_3;
+			currentLevel = PAGE_3;
+			defaultPage3_display();
 		}
 	}
 	else if(currentLevel == PAGE_2)
 	{
-		if(currentSelectedOption_Page2 == BACK)
+		if(currentSelectedOption_Page2 == PAGE2_BACK)
+		{
+			currentLevel = PAGE_1;
+
+			defaultPage1_display();
+		}
+	}
+	else if(currentLevel == PAGE_3)
+	{
+		if(currentSelectedOption_Page3 == PAGE3_BACK)
 		{
 			currentLevel = PAGE_1;
 
@@ -215,6 +267,31 @@ void rotateMenu(movement_type type)
 			lcdMenuLevel_2(page2_highlited_option, type);
 			break;
 
+		case PAGE_3:
+
+			if(type == MOVE_UP)
+			{
+				page3_highlited_option = (page3_highlited_option + 1) % OPTION_COUNT_PAGE_3;
+			}
+			else if(type == MOVE_DOWN) // clockwise
+			{
+				if(page3_highlited_option == 0)
+				{
+					page3_highlited_option = OPTION_COUNT_PAGE_3 - 1;
+				}
+				else
+				{
+					page3_highlited_option--;
+				}
+			}
+
+			currentSelectedOption_Page3 = page3_highlited_option;
+
+//			page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
+
+			lcdMenuLevel_3(page3_highlited_option, type);
+			break;
+
 		default:
 			break;
 	}
@@ -253,11 +330,64 @@ void perfromMovement(int* itr, movement_type type, Page_number num)
 			(*itr)--;
 		}
 	}
-
-//	return itr;
 }
 
-// PAGE 1
+
+// PAGE 3
+void lcdMenuLevel_3(int itr, movement_type type)
+{
+	int pos = 0;
+
+	/* Clear screen */
+	SSD1306_Fill(0);
+
+	/* Update screen */
+	SSD1306_UpdateScreen();
+
+	while(pos < TOTAL_OPTIONS_CAN_BE_DISPLYED &&
+			pos < OPTION_COUNT_PAGE_3)
+	{
+		switch(itr)  //start printing from the highlighted option
+		{
+			case 0:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
+				SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1); // print
+				break;
+
+			case 1:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
+				SSD1306_Puts ("PP oo OO", &Font_7x10, 1); // print
+				break;
+
+			case 2:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("PRETTY BOY", &Font_7x10, 1);
+				break;
+
+			case 3:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("BWAHAAA", &Font_7x10, 1);
+				break;
+
+			case 4:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("<back>", &Font_7x10, 1);
+				break;
+
+			default:
+				break;
+		}
+
+		itr = (itr + 1) % OPTION_COUNT_PAGE_3;
+
+		/* Update screen */
+		SSD1306_UpdateScreen();
+	}
+
+    SSD1306_UpdateScreen(); // update screen
+}
+
+
 void lcdMenuLevel_1(int itr, movement_type type)
 {
 	/* Clear screen */
@@ -278,6 +408,7 @@ void lcdMenuLevel_1(int itr, movement_type type)
 
     SSD1306_UpdateScreen(); // update screen
 }
+
 
 // PAGE 2  ->  Start Programming patterns
 void lcdMenuLevel_2(int itr, movement_type type)
@@ -343,6 +474,9 @@ void lcdMenuLevel_2(int itr, movement_type type)
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("     <back>", &Font_7x10, 1);
 				break;
+
+			default:
+				break;
 		}
 
 		itr = (itr + 1) % OPTION_COUNT_PAGE_2;
@@ -351,86 +485,6 @@ void lcdMenuLevel_2(int itr, movement_type type)
 		SSD1306_UpdateScreen();
 	}
 
-
-
-
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
-//		SSD1306_Puts ("      Hat", &Font_7x10, 1); // print
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
-//		SSD1306_Puts ("      Kick", &Font_7x10, 1); // print
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      opHat", &Font_7x10, 1);
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      rim", &Font_7x10, 1);
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      snare", &Font_7x10, 1);
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      tom1", &Font_7x10, 1);
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      tom2", &Font_7x10, 1);
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      tom3", &Font_7x10, 1);
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      trash", &Font_7x10, 1);
-//	}
-//
-//	perfromMovement(&itr, type, PAGE_2);
-//
-//	if(itr < TOTAL_OPTIONS_CAN_BE_DISPLYED)
-//	{
-//		SSD1306_GotoXY (5, rowLocationValue[itr]);
-//		SSD1306_Puts ("      back", &Font_7x10, 1);
-//	}
 
     SSD1306_UpdateScreen(); // update screen
 }
