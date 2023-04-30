@@ -68,5 +68,7 @@ void rotatory_sensor_lcd(void)
 		rotateMenu(MOVE_DOWN);
 	}
 
+	TIM3->CNT = 30000;
+
 	prev_pos_value = TIM3->CNT;
 }

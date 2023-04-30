@@ -42,7 +42,6 @@ typedef enum {
 Page1_options currentSelectedOption_Page1 = START_PROG_SOUNDS;
 
 
-
 typedef enum {
 	HAT,
 	KICK,
@@ -60,14 +59,14 @@ Page2_options currentSelectedOption_Page2 = HAT;
 
 
 typedef enum {
-	TUNAK_TUNAK,
-	PP_oo_OO,
+	demo_pattern,
+	Tunak_Tunak,
 	PRETTY_BOY,
 	BWAHAAA,
 	PAGE3_BACK
 } Page3_options;
 
-Page3_options currentSelectedOption_Page3 = TUNAK_TUNAK;
+Page3_options currentSelectedOption_Page3 = demo_pattern;
 
 
 uint8_t page1_highlited_option = 0;
@@ -95,11 +94,11 @@ void defaultPage1_display()
 	/* Update screen */
 	SSD1306_UpdateScreen();
 
-	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
-	SSD1306_Puts ("Start prog patt", &Font_7x10, 1); // print
+	SSD1306_GotoXY (5, rowLocationValue[0]);
+	SSD1306_Puts ("Start prog patt", &Font_7x10, 1);
 
-	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
-	SSD1306_Puts ("Play prog patt", &Font_7x10, 1); // print
+	SSD1306_GotoXY (5, rowLocationValue[1]);
+	SSD1306_Puts ("Play prog patt", &Font_7x10, 1);
 
     SSD1306_UpdateScreen(); // update screen
 }
@@ -116,11 +115,11 @@ void defaultPage2_display()
 	SSD1306_UpdateScreen();
 
 
-	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
-	SSD1306_Puts ("      Hat", &Font_7x10, 1); // print
+	SSD1306_GotoXY (5, rowLocationValue[0]);
+	SSD1306_Puts ("      Hat", &Font_7x10, 1);
 
-	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
-	SSD1306_Puts ("      Kick", &Font_7x10, 1); // print
+	SSD1306_GotoXY (5, rowLocationValue[1]);
+	SSD1306_Puts ("      Kick", &Font_7x10, 1);
 
 	SSD1306_GotoXY (5, rowLocationValue[2]);
 	SSD1306_Puts ("      opHat", &Font_7x10, 1);
@@ -146,11 +145,11 @@ void defaultPage3_display()
 	SSD1306_UpdateScreen();
 
 
-	SSD1306_GotoXY (5, rowLocationValue[0]); // goto 10, 10
-	SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1); // print
+	SSD1306_GotoXY (5, rowLocationValue[0]);
+	SSD1306_Puts ("demo pattern", &Font_7x10, 1);
 
-	SSD1306_GotoXY (5, rowLocationValue[1]); // goto 10, 10
-	SSD1306_Puts ("PP oo OO", &Font_7x10, 1); // print
+	SSD1306_GotoXY (5, rowLocationValue[1]);
+	SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1);
 
 	SSD1306_GotoXY (5, rowLocationValue[2]);
 	SSD1306_Puts ("PRETTY BOY", &Font_7x10, 1);
@@ -186,6 +185,8 @@ void buttonPressed()
 			currentLevel = PAGE_2;
 
 			defaultPage2_display();
+
+			selectCurrentBeatProgramming(currentSelectedOption_Page2);
 		}
 		else if(currentSelectedOption_Page1 == PLAY_PROG_SOUNDS)
 		{
@@ -204,6 +205,15 @@ void buttonPressed()
 	}
 	else if(currentLevel == PAGE_3)
 	{
+		if(currentSelectedOption_Page3 == demo_pattern)
+		{
+			currentLevel = PAGE_1;
+
+			demoBeatSetup();
+
+			defaultPage1_display();
+		}
+
 		if(currentSelectedOption_Page3 == PAGE3_BACK)
 		{
 			currentLevel = PAGE_1;
@@ -263,6 +273,7 @@ void rotateMenu(movement_type type)
 
 			currentSelectedOption_Page2 = page2_highlited_option;
 
+			// change the beat
 			selectCurrentBeatProgramming(currentSelectedOption_Page2);
 
 //			page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
@@ -354,12 +365,12 @@ void lcdMenuLevel_3(int itr, movement_type type)
 		{
 			case 0:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
-				SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1); // print
+				SSD1306_Puts ("demo pattern", &Font_7x10, 1); // print
 				break;
 
 			case 1:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
-				SSD1306_Puts ("PP oo OO", &Font_7x10, 1); // print
+				SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1); // print
 				break;
 
 			case 2:
@@ -455,17 +466,17 @@ void lcdMenuLevel_2(int itr, movement_type type)
 
 			case 5:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
-				SSD1306_Puts ("      tom1", &Font_7x10, 1);
+				SSD1306_Puts ("      tom 1", &Font_7x10, 1);
 				break;
 
 			case 6:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
-				SSD1306_Puts ("      tom2", &Font_7x10, 1);
+				SSD1306_Puts ("      tom 2", &Font_7x10, 1);
 				break;
 
 			case 7:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
-				SSD1306_Puts ("      tom3", &Font_7x10, 1);
+				SSD1306_Puts ("      tom 3", &Font_7x10, 1);
 				break;
 
 			case 8:
@@ -487,9 +498,6 @@ void lcdMenuLevel_2(int itr, movement_type type)
 		/* Update screen */
 		SSD1306_UpdateScreen();
 	}
-
-
-    SSD1306_UpdateScreen(); // update screen
 }
 
 

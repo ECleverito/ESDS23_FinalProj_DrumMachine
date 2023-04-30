@@ -187,7 +187,6 @@ int main(void)
   //Initialize LED buttons
   initButtons();
 
-  demoBeatSetup();
 
   //Set LEDs low
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
@@ -203,8 +202,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  selectCurrentBeatProgramming();
-
+	  // Button press check for LCD's rotary knob
 	  if(HAL_GPIO_ReadPin(Rot_BTN_GPIO_Port, Rot_BTN_Pin) == GPIO_PIN_RESET)
 	  {
 		  buttonPressed();

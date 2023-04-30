@@ -15,7 +15,6 @@
 
 void demoBeatSetup();
 
-//void selectCurrentBeatProgramming();
 void selectCurrentBeatProgramming(uint8_t selectedSample);
 
 void addToMixingBuff(int16_t *sampleData, size_t sampleDataSize);
