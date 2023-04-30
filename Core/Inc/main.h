@@ -72,6 +72,8 @@ void Error_Handler(void);
 #define Button_1_Pin GPIO_PIN_1
 #define Button_1_GPIO_Port GPIOA
 #define Button_1_EXTI_IRQn EXTI1_IRQn
+#define Rot_BTN_Pin GPIO_PIN_5
+#define Rot_BTN_GPIO_Port GPIOA
 #define Button_7_Pin GPIO_PIN_7
 #define Button_7_GPIO_Port GPIOE
 #define Button_7_EXTI_IRQn EXTI9_5_IRQn

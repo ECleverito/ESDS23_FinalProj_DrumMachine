@@ -55,31 +55,32 @@ void demoBeatSetup()
 
 }
 
-void selectCurrentBeatProgramming()
+void selectCurrentBeatProgramming(uint8_t selectedSample)
 {
-	printf("Select one of the following drum samples for step programming: \r\n");
+//	printf("Select one of the following drum samples for step programming: \r\n");
+//
+//	printf("\t1 - Hat\r\n");
+//
+//	printf("\t2 - Kick\r\n");
+//
+//	printf("\t3 - Open Hat\r\n");
+//
+//	printf("\t4 - Rim\r\n");
+//
+//	printf("\t5 - Snare\r\n");
+//
+//	printf("\t6 - Tom 1\r\n");
+//
+//	printf("\t7 - Tom 2\r\n");
+//
+//	printf("\t8 - Tom 3\r\n");
+//
+//	printf("\t9 - Trash\r\n\n");
+//
+//	uint8_t selectedSample = getchar();
 
-	printf("\t1 - Hat\r\n");
-
-	printf("\t2 - Kick\r\n");
-
-	printf("\t3 - Open Hat\r\n");
-
-	printf("\t4 - Rim\r\n");
-
-	printf("\t5 - Snare\r\n");
-
-	printf("\t6 - Tom 1\r\n");
-
-	printf("\t7 - Tom 2\r\n");
-
-	printf("\t8 - Tom 3\r\n");
-
-	printf("\t9 - Trash\r\n\n");
-
-	uint8_t selectedSample = getchar();
-
-	switch(selectedSample-48)
+//	switch(selectedSample-48)
+	switch(selectedSample)
 	{
 	case 1:
 		//Set Hat to current beat programming
