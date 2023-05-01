@@ -35,9 +35,9 @@ int rowLocationValue[] = {
 };
 
 
-void lcdMenuLevel_1(int itr, movement_type type);
-void lcdMenuLevel_2(int itr, movement_type type);
-void lcdMenuLevel_3(int itr, movement_type type);
+void lcdMenuLevel_1(int itr, rotatatory_encoder_evt_t type);
+void lcdMenuLevel_2(int itr, rotatatory_encoder_evt_t type);
+void lcdMenuLevel_3(int itr, rotatatory_encoder_evt_t type);
 
 
 void defaultPage1_display()
@@ -138,7 +138,7 @@ void lcd_init()
 }
 
 
-void setPage(movement_type type)
+void setPage(rotatatory_encoder_evt_t type)
 {
 	currentLevel = type;
 }
@@ -200,7 +200,7 @@ void buttonPressed()
 }
 
 
-void rotateMenu(movement_type type)
+void rotateMenu(rotatatory_encoder_evt_t type)
 {
 	switch (currentLevel)
 	{
@@ -223,8 +223,6 @@ void rotateMenu(movement_type type)
 			}
 
 			currentSelectedOption_Page1 = page1_highlited_option;
-
-//			page1_highlited_option = (page1_highlited_option + 1) % OPTION_COUNT_PAGE_1;
 
 			lcdMenuLevel_1(page1_highlited_option, type);
 			break;
@@ -277,8 +275,6 @@ void rotateMenu(movement_type type)
 
 			currentSelectedOption_Page3 = page3_highlited_option;
 
-//			page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
-
 			lcdMenuLevel_3(page3_highlited_option, type);
 			break;
 
@@ -288,7 +284,7 @@ void rotateMenu(movement_type type)
 }
 
 
-void perfromMovement(int* itr, movement_type type, Page_number num)
+void perfromMovement(int* itr, rotatatory_encoder_evt_t type, Page_number num)
 {
 	int total_options = 0;
 
@@ -324,7 +320,7 @@ void perfromMovement(int* itr, movement_type type, Page_number num)
 
 
 // PAGE 3
-void lcdMenuLevel_3(int itr, movement_type type)
+void lcdMenuLevel_3(int itr, rotatatory_encoder_evt_t type)
 {
 	int pos = 0;
 
@@ -378,7 +374,7 @@ void lcdMenuLevel_3(int itr, movement_type type)
 }
 
 
-void lcdMenuLevel_1(int itr, movement_type type)
+void lcdMenuLevel_1(int itr, rotatatory_encoder_evt_t type)
 {
 	/* Clear screen */
 	SSD1306_Fill(0);
@@ -401,7 +397,7 @@ void lcdMenuLevel_1(int itr, movement_type type)
 
 
 // PAGE 2  ->  Start Programming patterns
-void lcdMenuLevel_2(int itr, movement_type type)
+void lcdMenuLevel_2(int itr, rotatatory_encoder_evt_t type)
 {
 	int pos = 0;
 

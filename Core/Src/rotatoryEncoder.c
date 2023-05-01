@@ -19,7 +19,6 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 
-
 uint32_t prev_pos_value = 0;
 
 void init_rotatory_encoder(void)
@@ -35,7 +34,7 @@ void init_rotatory_encoder(void)
 	prev_pos_value = 30000;
 }
 
-
+extern rotatatory_encoder_evt_t menu_encoder_evt;
 
 void rotatory_sensor_sense(void)
 {
@@ -60,12 +59,12 @@ void rotatory_sensor_lcd(void)
 	if(prev_pos_value > TIM3->CNT)
 	{
 		// here means rotation happened
-		rotateMenu(MOVE_UP);
+		menu_encoder_evt = MOVE_UP;
 	}
 	else if(prev_pos_value < TIM3->CNT)
 	{
 		// here means rotation happened
-		rotateMenu(MOVE_DOWN);
+		menu_encoder_evt = MOVE_DOWN;
 	}
 
 	TIM3->CNT = 30000;

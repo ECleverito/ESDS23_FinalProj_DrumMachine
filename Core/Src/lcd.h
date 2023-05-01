@@ -8,12 +8,11 @@
 #ifndef SRC_LCD_H_
 #define SRC_LCD_H_
 
-
-
 typedef enum {
 	MOVE_UP,
-	MOVE_DOWN
-} movement_type;
+	MOVE_DOWN,
+	NO_ROT_MVMT
+} rotatatory_encoder_evt_t;
 
 typedef enum {
 	PAGE_1,
@@ -53,8 +52,8 @@ typedef enum {
 } Page3_options;
 
 void lcd_init(void);
-void setPage(movement_type type);
-void rotateMenu(movement_type type);
+void setPage(rotatatory_encoder_evt_t type);
+void rotateMenu(rotatatory_encoder_evt_t type);
 void buttonPressed(void);
 
 

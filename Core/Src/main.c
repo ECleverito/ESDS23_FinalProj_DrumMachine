@@ -65,7 +65,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 
 const uint16_t silenceData[] = {0,0,0,0,0,0,0,0,0,0};
-
+rotatatory_encoder_evt_t menu_encoder_evt = NO_ROT_MVMT;
 
 /* USER CODE END PV */
 
@@ -206,6 +206,11 @@ int main(void)
 	  if(HAL_GPIO_ReadPin(Rot_BTN_GPIO_Port, Rot_BTN_Pin) == GPIO_PIN_RESET)
 	  {
 		  buttonPressed();
+	  }
+	  if(menu_encoder_evt != NO_ROT_MVMT)
+	  {
+		  rotateMenu(menu_encoder_evt);
+		  menu_encoder_evt = NO_ROT_MVMT;
 	  }
   }
     /* USER CODE END WHILE */
