@@ -18,6 +18,7 @@
 #include "stm32f4xx_hal_i2s_ex.h"
 #include "stdbool.h"
 #include "stdio.h"
+#include "string.h"
 //#include "arm_math.h"
 //Considered using vector addition methods from CMSIS libs but these
 //require 32-bit float format sample data
@@ -36,6 +37,11 @@ uint16_t tom3BeatProgramming = 0;
 uint16_t trashBeatProgramming = 0;
 
 uint16_t *currentBeat = NULL;
+uint16_t *currentPattern = NULL;
+
+uint16_t userPattern1programming[NUM_SAMPS];
+uint16_t userPattern2programming[NUM_SAMPS];
+uint16_t demoBeatprogramming[NUM_SAMPS];
 
 bool sendingWav = false;
 bool noBeat = true;
@@ -43,64 +49,46 @@ bool noBeat = true;
 int16_t MixingBuff[7144];
 int16_t **samplePointers[10];
 
-void demoBeatSetup()
+void initUserPrograms()
 {
+	memset(userPattern1programming,0,sizeof(userPattern1programming));
+	memset(userPattern2programming,0,sizeof(userPattern2programming));
+}
 
-	//Set up beat programming demo
-	currentBeat = &hatBeatProgramming;
-	*currentBeat = 0b1111011101110111;
-	currentBeat = &kickBeatProgramming;
-	*currentBeat = 0b1000000010000000;
-	currentBeat = &snareBeatProgramming;
-	*currentBeat = 0b0000100000001000;
+void loadPatternProgramming(Page3_options pattern)
+{
+	switch(pattern)
+	{
+	case User_1:
+		currentPattern = userPattern1programming;
+		break;
 
+	case User_2:
+		currentPattern = userPattern2programming;
+		break;
+
+	case Demo_pattern:
+		memset(demoBeatprogramming,0,sizeof(demoBeatprogramming));
+		//Set up beat programming demo
+		demoBeatprogramming[HAT] = 0b0111011101110111;
+		demoBeatprogramming[KICK] = 0b1000000010000000;
+		demoBeatprogramming[SNARE] = 0b0000100000001000;
+		currentPattern = demoBeatprogramming;
+		break;
+	}
+	currentBeat = &currentPattern[HAT];
+
+	updateLEDs();
 }
 
 void selectCurrentBeatProgramming(uint8_t selectedSample)
 {
-	switch(selectedSample)
+	if(selectedSample<RESET_PATTERN)
 	{
-	case HAT:
-		//Set Hat to current beat programming
-		currentBeat = &hatBeatProgramming;
-		break;
-	case KICK:
-		//Set Kick to current beat programming
-		currentBeat = &kickBeatProgramming;
-		break;
-	case OPHAT:
-		//Set Open Hat to current beat programming
-		currentBeat = &opHatBeatProgramming;
-		break;
-	case RIM:
-		//Set Rim to current beat programming
-		currentBeat = &rimBeatProgramming;
-		break;
-	case SNARE:
-		//Set Snare to current beat programming
-		currentBeat = &snareBeatProgramming;
-		break;
-	case TOM1:
-		//Set Tom 1 to current beat programming
-		currentBeat = &tom1BeatProgramming;
-		break;
-	case TOM2:
-		//Set Tom 2 to current beat programming
-		currentBeat = &tom2BeatProgramming;
-		break;
-	case TOM3:
-		//Set Tom 3 to current beat programming
-		currentBeat = &tom3BeatProgramming;
-		break;
-	case TRASH:
-		//Set Trash to current beat programming
-		currentBeat = &trashBeatProgramming;
-		break;
-	default:
-		break;
+		currentBeat = &currentPattern[selectedSample];
+		updateLEDs();
 	}
 
-	updateLEDs();
 }
 
 void addToMixingBuff_Vttoth(int16_t *sampleData, size_t sampleDataSize)
@@ -189,7 +177,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==&htim1)
 	{
-		if(currentBeat!=NULL)
+		if((currentBeat!=NULL)&&(currentPattern!=NULL))
 		{
 
 			bool firstSample = true;
@@ -198,7 +186,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 			memset(MixingBuff,0,sizeof(MixingBuff)/sizeof(MixingBuff[0]));
 
-			if(hatBeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[HAT] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -212,7 +200,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(kickBeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[KICK] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -226,7 +214,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(snareBeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[SNARE] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -240,7 +228,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(opHatBeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[OPHAT] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -254,7 +242,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(rimBeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[RIM] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -268,7 +256,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(tom1BeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[TOM1] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -282,7 +270,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(tom2BeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[TOM2] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -296,7 +284,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(tom3BeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[TOM3] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -310,7 +298,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				noBeat=false;
 				numSamps++;
 			}
-			if(trashBeatProgramming & beatProgrammingBitMask)
+			if(currentPattern[TRASH] & beatProgrammingBitMask)
 			{
 				if(firstSample)
 				{
@@ -347,15 +335,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void resetProgramming()
 {
-	hatBeatProgramming = 0;
-	kickBeatProgramming = 0;
-	opHatBeatProgramming = 0;
-	rimBeatProgramming = 0;
-	snareBeatProgramming = 0;
-	tom1BeatProgramming = 0;
-	tom2BeatProgramming = 0;
-	tom3BeatProgramming = 0;
-	trashBeatProgramming = 0;
+	for(int i=0;i<RESET_PATTERN;i++)
+	{
+		currentPattern[i]=0;
+	}
 }
 
 void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)

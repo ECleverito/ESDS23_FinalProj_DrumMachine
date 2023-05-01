@@ -182,6 +182,8 @@ int main(void)
   //Start sending zeros to DAC
   HAL_I2S_Transmit_DMA(&hi2s3, silenceData, 10);
 
+  initUserPrograms();
+
   HAL_TIM_Base_Start_IT(&htim1);
 
   //Initialize LED buttons

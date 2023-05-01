@@ -42,7 +42,11 @@ typedef enum {
 	NUM_PG2_OPS
 } Page2_options;
 
+#define NUM_SAMPS (NUM_PG2_OPS-1)
+
 typedef enum {
+	User_1,
+	User_2,
 	Demo_pattern,
 	Tunak_Tunak,
 	PRETTY_BOY,

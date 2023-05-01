@@ -8,14 +8,19 @@
 #ifndef SRC_BEATENGINE_H_
 #define SRC_BEATENGINE_H_
 
+#include "lcd.h"
+
 #include "stdint.h"
 #include "stddef.h"
 
 //#define DRUM_DEBUG	1
 
+void initUserPrograms();
 void demoBeatSetup();
 
 void selectCurrentBeatProgramming(uint8_t selectedSample);
+
+void loadPatternProgramming(Page3_options pattern);
 
 void resetProgramming();
 

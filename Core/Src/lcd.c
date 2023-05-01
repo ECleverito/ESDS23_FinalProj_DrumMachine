@@ -19,7 +19,7 @@ Page1_options currentSelectedOption_Page1 = SELECT_PATTERNS;
 
 Page2_options currentSelectedOption_Page2 = HAT;
 
-Page3_options currentSelectedOption_Page3 = Demo_pattern;
+Page3_options currentSelectedOption_Page3 = User_1;
 
 #define OPTION_COUNT_PAGE_1					NUM_PG1_OPS
 #define OPTION_COUNT_PAGE_2					NUM_PG2_OPS
@@ -37,7 +37,7 @@ int rowLocationValue[] = {
 
 void lcdMenuLevel_1(int itr, rotatatory_encoder_evt_t type);
 void lcdMenuLevel_2(int itr, rotatatory_encoder_evt_t type);
-void lcdMenuLevel_3(int itr, rotatatory_encoder_evt_t type);
+void lcdMenuLevel_3(Page3_options option, rotatatory_encoder_evt_t type);
 
 
 void defaultPage1_display()
@@ -60,9 +60,8 @@ void defaultPage1_display()
 
     // Set the default option
     page1_highlited_option = SELECT_PATTERNS;
+    currentSelectedOption_Page1 = SELECT_PATTERNS;
 
-	// change the beat
-	selectCurrentBeatProgramming(currentSelectedOption_Page1);
 }
 
 
@@ -96,6 +95,7 @@ void defaultPage2_display()
 
     // Set the default option
     page2_highlited_option = HAT;
+    currentSelectedOption_Page2 = HAT;
 
 	// change the beat
 	selectCurrentBeatProgramming(page2_highlited_option);
@@ -112,21 +112,24 @@ void defaultPage3_display()
 	/* Update screen */
 	SSD1306_UpdateScreen();
 
-
 	SSD1306_GotoXY (5, rowLocationValue[0]);
-	SSD1306_Puts ("demo pattern", &Font_7x10, 1);
+	SSD1306_Puts ("User Pattern 1", &Font_7x10, 1);
 
 	SSD1306_GotoXY (5, rowLocationValue[1]);
-	SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1);
+	SSD1306_Puts ("User Pattern 2", &Font_7x10, 1);
 
 	SSD1306_GotoXY (5, rowLocationValue[2]);
-	SSD1306_Puts ("PRETTY BOY", &Font_7x10, 1);
+	SSD1306_Puts ("Demo pattern", &Font_7x10, 1);
 
 	SSD1306_GotoXY (5, rowLocationValue[3]);
-	SSD1306_Puts ("BWAHAAA", &Font_7x10, 1);
+	SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1);
 
 	SSD1306_GotoXY (5, rowLocationValue[4]);
-	SSD1306_Puts ("<back>", &Font_7x10, 1);
+	SSD1306_Puts ("PRETTY BOY", &Font_7x10, 1);
+
+    // Set the default option
+    page3_highlited_option = User_1;
+    currentSelectedOption_Page3 = User_1;
 
     SSD1306_UpdateScreen(); // update screen
 }
@@ -151,7 +154,6 @@ void buttonPressed()
 		if(currentSelectedOption_Page1 == PROGRAM_PATTERNS)
 		{
 			currentLevel = PAGE_2;
-
 			defaultPage2_display();
 
 			selectCurrentBeatProgramming(currentSelectedOption_Page2);
@@ -182,21 +184,35 @@ void buttonPressed()
 	}
 	else if(currentLevel == PAGE_3)
 	{
-		if(currentSelectedOption_Page3 == Demo_pattern)
+
+		switch(currentSelectedOption_Page3)
 		{
+		case User_1:
+			loadPatternProgramming(User_1);
 			currentLevel = PAGE_1;
-
-			demoBeatSetup();
-
 			defaultPage1_display();
+			break;
+		case User_2:
+			loadPatternProgramming(User_2);
+			currentLevel = PAGE_1;
+			defaultPage1_display();
+			break;
+
+		case Demo_pattern:
+			loadPatternProgramming(Demo_pattern);
+			currentLevel = PAGE_1;
+			defaultPage1_display();
+			break;
+
+		case Tunak_Tunak:
+		case BWAHAAA:
+		case PRETTY_BOY:
+		case PAGE3_BACK:
+			currentLevel = PAGE_1;
+			defaultPage1_display();
+			break;
 		}
 
-		if(currentSelectedOption_Page3 == PAGE3_BACK)
-		{
-			currentLevel = PAGE_1;
-
-			defaultPage1_display();
-		}
 	}
 }
 
@@ -250,8 +266,6 @@ void rotateMenu(rotatatory_encoder_evt_t type)
 
 			// change the beat
 			selectCurrentBeatProgramming(currentSelectedOption_Page2);
-
-//			page2_highlited_option = (page2_highlited_option + 1) % OPTION_COUNT_PAGE_2;
 
 			lcdMenuLevel_2(page2_highlited_option, type);
 			break;
@@ -321,7 +335,7 @@ void perfromMovement(int* itr, rotatatory_encoder_evt_t type, Page_number num)
 
 
 // PAGE 3
-void lcdMenuLevel_3(int itr, rotatatory_encoder_evt_t type)
+void lcdMenuLevel_3(Page3_options option, rotatatory_encoder_evt_t type)
 {
 	int pos = 0;
 
@@ -334,29 +348,39 @@ void lcdMenuLevel_3(int itr, rotatatory_encoder_evt_t type)
 	while(pos < TOTAL_OPTIONS_CAN_BE_DISPLYED &&
 			pos < OPTION_COUNT_PAGE_3)
 	{
-		switch(itr)  //start printing from the highlighted option
+		switch(option)  //start printing from the highlighted option
 		{
-			case 0:
+			case User_1:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
+				SSD1306_Puts ("User Pattern 1", &Font_7x10, 1); // print
+				break;
+
+			case User_2:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
+				SSD1306_Puts ("User Pattern 2", &Font_7x10, 1); // print
+				break;
+
+			case Demo_pattern:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
 				SSD1306_Puts ("demo pattern", &Font_7x10, 1); // print
 				break;
 
-			case 1:
+			case Tunak_Tunak:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
 				SSD1306_Puts ("Tunak Tunak", &Font_7x10, 1); // print
 				break;
 
-			case 2:
+			case PRETTY_BOY:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("PRETTY BOY", &Font_7x10, 1);
 				break;
 
-			case 3:
+			case BWAHAAA:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("BWAHAAA", &Font_7x10, 1);
 				break;
 
-			case 4:
+			case PAGE3_BACK:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("<back>", &Font_7x10, 1);
 				break;
@@ -365,7 +389,7 @@ void lcdMenuLevel_3(int itr, rotatatory_encoder_evt_t type)
 				break;
 		}
 
-		itr = (itr + 1) % OPTION_COUNT_PAGE_3;
+		option = (option + 1) % OPTION_COUNT_PAGE_3;
 
 		/* Update screen */
 		SSD1306_UpdateScreen();
