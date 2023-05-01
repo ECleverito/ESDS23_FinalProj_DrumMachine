@@ -8,71 +8,27 @@
 #ifndef SRC_LCD_C_
 #define SRC_LCD_C_
 
-
 #include "lcd.h"
 #include "ssd1306.h"
 #include "fonts.h"
 #include "beatEngine.h"
 
-
-
-
-#define OPTION_COUNT_PAGE_1					2
-#define OPTION_COUNT_PAGE_2					10
-#define OPTION_COUNT_PAGE_3					5
-#define TOTAL_OPTIONS_CAN_BE_DISPLYED		5
-
-
-
-
-typedef enum {
-	PAGE_1,
-	PAGE_2,
-	PAGE_3
-} Page_number;
-
 uint8_t currentLevel = PAGE_1;
-
-
-typedef enum {
-	START_PROG_SOUNDS,
-	PLAY_PROG_SOUNDS
-} Page1_options;
 
 Page1_options currentSelectedOption_Page1 = START_PROG_SOUNDS;
 
-
-typedef enum {
-	HAT,
-	KICK,
-	OPHAT,
-	RIM,
-	SNARE,
-	TOM1,
-	TOM2,
-	TOM3,
-	TRASH,
-	PAGE2_BACK
-} Page2_options;
-
 Page2_options currentSelectedOption_Page2 = HAT;
 
+Page3_options currentSelectedOption_Page3 = Demo_pattern;
 
-typedef enum {
-	demo_pattern,
-	Tunak_Tunak,
-	PRETTY_BOY,
-	BWAHAAA,
-	PAGE3_BACK
-} Page3_options;
-
-Page3_options currentSelectedOption_Page3 = demo_pattern;
-
+#define OPTION_COUNT_PAGE_1					NUM_PG1_OPS
+#define OPTION_COUNT_PAGE_2					NUM_PG2_OPS
+#define OPTION_COUNT_PAGE_3					NUM_PG3_OPS
+#define TOTAL_OPTIONS_CAN_BE_DISPLYED		5
 
 uint8_t page1_highlited_option = 0;
 uint8_t page2_highlited_option = 0;
 uint8_t page3_highlited_option = 0;
-
 
 int rowLocationValue[] = {
 		1, 20, 30, 40, 50
@@ -101,6 +57,12 @@ void defaultPage1_display()
 	SSD1306_Puts ("Play prog patt", &Font_7x10, 1);
 
     SSD1306_UpdateScreen(); // update screen
+
+    // Set the default option
+    page1_highlited_option = START_PROG_SOUNDS;
+
+	// change the beat
+	selectCurrentBeatProgramming(currentSelectedOption_Page1);
 }
 
 
@@ -131,6 +93,12 @@ void defaultPage2_display()
 	SSD1306_Puts ("      snare", &Font_7x10, 1);
 
     SSD1306_UpdateScreen(); // update screen
+
+    // Set the default option
+    page2_highlited_option = HAT;
+
+	// change the beat
+	selectCurrentBeatProgramming(page2_highlited_option);
 }
 
 
@@ -196,7 +164,15 @@ void buttonPressed()
 	}
 	else if(currentLevel == PAGE_2)
 	{
-		if(currentSelectedOption_Page2 == PAGE2_BACK)
+		if(currentSelectedOption_Page2 == RESET_PATTERN)
+		{
+			currentLevel = PAGE_1;
+
+			// reset the current playing sound
+
+			defaultPage1_display();
+		}
+		else if(currentSelectedOption_Page2 == PAGE2_BACK)
 		{
 			currentLevel = PAGE_1;
 
@@ -205,7 +181,7 @@ void buttonPressed()
 	}
 	else if(currentLevel == PAGE_3)
 	{
-		if(currentSelectedOption_Page3 == demo_pattern)
+		if(currentSelectedOption_Page3 == Demo_pattern)
 		{
 			currentLevel = PAGE_1;
 
@@ -439,52 +415,57 @@ void lcdMenuLevel_2(int itr, movement_type type)
 	{
 		switch(itr)  //start printing from the highlighted option
 		{
-			case 0:
+			case HAT:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
 				SSD1306_Puts ("      Hat", &Font_7x10, 1); // print
 				break;
 
-			case 1:
+			case KICK:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]); // goto 10, 10
 				SSD1306_Puts ("      Kick", &Font_7x10, 1); // print
 				break;
 
-			case 2:
+			case OPHAT:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("      opHat", &Font_7x10, 1);
 				break;
 
-			case 3:
+			case RIM:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("      rim", &Font_7x10, 1);
 				break;
 
-			case 4:
+			case SNARE:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("      snare", &Font_7x10, 1);
 				break;
 
-			case 5:
+			case TOM1:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("      tom 1", &Font_7x10, 1);
 				break;
 
-			case 6:
+			case TOM2:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("      tom 2", &Font_7x10, 1);
 				break;
 
-			case 7:
+			case TOM3:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("      tom 3", &Font_7x10, 1);
 				break;
 
-			case 8:
+			case TRASH:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("      trash", &Font_7x10, 1);
 				break;
 
-			case 9:
+			case RESET_PATTERN:
+				SSD1306_GotoXY (5, rowLocationValue[pos++]);
+				SSD1306_Puts ("      Reset", &Font_7x10, 1);
+				break;
+
+			case PAGE2_BACK:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
 				SSD1306_Puts ("     <back>", &Font_7x10, 1);
 				break;

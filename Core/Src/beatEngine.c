@@ -9,6 +9,7 @@
 #include "main.h"
 #include "internalSamples.h"
 #include "buttons.h"
+#include "lcd.h"
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_it.h"
@@ -59,39 +60,39 @@ void selectCurrentBeatProgramming(uint8_t selectedSample)
 {
 	switch(selectedSample)
 	{
-	case 1:
+	case HAT:
 		//Set Hat to current beat programming
 		currentBeat = &hatBeatProgramming;
 		break;
-	case 2:
+	case KICK:
 		//Set Kick to current beat programming
 		currentBeat = &kickBeatProgramming;
 		break;
-	case 3:
+	case OPHAT:
 		//Set Open Hat to current beat programming
 		currentBeat = &opHatBeatProgramming;
 		break;
-	case 4:
+	case RIM:
 		//Set Rim to current beat programming
 		currentBeat = &rimBeatProgramming;
 		break;
-	case 5:
+	case SNARE:
 		//Set Snare to current beat programming
 		currentBeat = &snareBeatProgramming;
 		break;
-	case 6:
+	case TOM1:
 		//Set Tom 1 to current beat programming
 		currentBeat = &tom1BeatProgramming;
 		break;
-	case 7:
+	case TOM2:
 		//Set Tom 2 to current beat programming
 		currentBeat = &tom2BeatProgramming;
 		break;
-	case 8:
+	case TOM3:
 		//Set Tom 3 to current beat programming
 		currentBeat = &tom3BeatProgramming;
 		break;
-	case 9:
+	case TRASH:
 		//Set Trash to current beat programming
 		currentBeat = &trashBeatProgramming;
 		break;
