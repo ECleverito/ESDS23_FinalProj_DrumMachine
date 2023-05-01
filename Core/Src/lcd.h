@@ -37,6 +37,9 @@ typedef enum {
 	TOM2,
 	TOM3,
 	TRASH,
+	TUNAK,
+	TUN,
+	DAI,
 	RESET_PATTERN,
 	PAGE2_BACK,
 	NUM_PG2_OPS

@@ -42,6 +42,7 @@ uint16_t *currentPattern = NULL;
 uint16_t userPattern1programming[NUM_SAMPS];
 uint16_t userPattern2programming[NUM_SAMPS];
 uint16_t demoBeatprogramming[NUM_SAMPS];
+uint16_t tunakTunakBeatprogramming[NUM_SAMPS];
 
 bool sendingWav = false;
 bool noBeat = true;
@@ -53,6 +54,7 @@ void initUserPrograms()
 {
 	memset(userPattern1programming,0,sizeof(userPattern1programming));
 	memset(userPattern2programming,0,sizeof(userPattern2programming));
+	currentPattern = userPattern1programming;
 }
 
 void loadPatternProgramming(Page3_options pattern)
@@ -61,10 +63,12 @@ void loadPatternProgramming(Page3_options pattern)
 	{
 	case User_1:
 		currentPattern = userPattern1programming;
+		currentBeat = &currentPattern[HAT];
 		break;
 
 	case User_2:
 		currentPattern = userPattern2programming;
+		currentBeat = &currentPattern[HAT];
 		break;
 
 	case Demo_pattern:
@@ -74,9 +78,20 @@ void loadPatternProgramming(Page3_options pattern)
 		demoBeatprogramming[KICK] = 0b1000000010000000;
 		demoBeatprogramming[SNARE] = 0b0000100000001000;
 		currentPattern = demoBeatprogramming;
+		currentBeat = &currentPattern[HAT];
+		break;
+
+	case Tunak_Tunak:
+		memset(MixingBuff,0,sizeof(MixingBuff));
+		memset(tunakTunakBeatprogramming,0,sizeof(tunakTunakBeatprogramming));
+		//Set up beat programming demo
+		tunakTunakBeatprogramming[TUNAK] = 0b1010101010100000;
+		tunakTunakBeatprogramming[TUN] = 0b0001000100010000;
+		tunakTunakBeatprogramming[DAI] = 0b0000000000001110;
+		currentPattern = tunakTunakBeatprogramming;
+		currentBeat = &currentPattern[TUNAK];
 		break;
 	}
-	currentBeat = &currentPattern[HAT];
 
 	updateLEDs();
 }
@@ -308,6 +323,48 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				else
 				{
 					addToMixingBuff(trash_sample,7144);
+				}
+				noBeat=false;
+				numSamps++;
+			}
+			if(currentPattern[TUNAK] & beatProgrammingBitMask)
+			{
+				if(firstSample)
+				{
+					memcpy(MixingBuff,tunak_sample,3576*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(tunak_sample,3576);
+				}
+				noBeat=false;
+				numSamps++;
+			}
+			if(currentPattern[TUN] & beatProgrammingBitMask)
+			{
+				if(firstSample)
+				{
+					memcpy(MixingBuff,tun_sample,3450*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(tun_sample,3450);
+				}
+				noBeat=false;
+				numSamps++;
+			}
+			if(currentPattern[DAI] & beatProgrammingBitMask)
+			{
+				if(firstSample)
+				{
+					memcpy(MixingBuff,dai_sample,3582*2);
+					firstSample=false;
+				}
+				else
+				{
+					addToMixingBuff(dai_sample,3582);
 				}
 				noBeat=false;
 				numSamps++;

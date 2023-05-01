@@ -205,6 +205,11 @@ void buttonPressed()
 			break;
 
 		case Tunak_Tunak:
+			loadPatternProgramming(Tunak_Tunak);
+			currentLevel = PAGE_1;
+			defaultPage1_display();
+			break;
+
 		case BWAHAAA:
 		case PRETTY_BOY:
 		case PAGE3_BACK:
@@ -262,10 +267,23 @@ void rotateMenu(rotatatory_encoder_evt_t type)
 				}
 			}
 
+			//Skipping special samples used in demo surprise xD
+			if(page2_highlited_option==TUNAK)
+			{
+				page2_highlited_option = RESET_PATTERN;
+			}
+			if(page2_highlited_option==DAI)
+			{
+				page2_highlited_option = TRASH;
+			}
+
 			currentSelectedOption_Page2 = page2_highlited_option;
 
-			// change the beat
-			selectCurrentBeatProgramming(currentSelectedOption_Page2);
+			// change the beat, only when a specific beat option is selected
+			if(currentSelectedOption_Page2 < TUNAK )
+			{
+				selectCurrentBeatProgramming(currentSelectedOption_Page2);
+			}
 
 			lcdMenuLevel_2(page2_highlited_option, type);
 			break;
