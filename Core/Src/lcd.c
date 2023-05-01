@@ -15,7 +15,7 @@
 
 uint8_t currentLevel = PAGE_1;
 
-Page1_options currentSelectedOption_Page1 = START_PROG_SOUNDS;
+Page1_options currentSelectedOption_Page1 = SELECT_PATTERNS;
 
 Page2_options currentSelectedOption_Page2 = HAT;
 
@@ -51,15 +51,15 @@ void defaultPage1_display()
 	SSD1306_UpdateScreen();
 
 	SSD1306_GotoXY (5, rowLocationValue[0]);
-	SSD1306_Puts ("Start prog patt", &Font_7x10, 1);
+	SSD1306_Puts ("Select pattern", &Font_7x10, 1);
 
 	SSD1306_GotoXY (5, rowLocationValue[1]);
-	SSD1306_Puts ("Play prog patt", &Font_7x10, 1);
+	SSD1306_Puts ("Program pattern", &Font_7x10, 1);
 
     SSD1306_UpdateScreen(); // update screen
 
     // Set the default option
-    page1_highlited_option = START_PROG_SOUNDS;
+    page1_highlited_option = SELECT_PATTERNS;
 
 	// change the beat
 	selectCurrentBeatProgramming(currentSelectedOption_Page1);
@@ -148,7 +148,7 @@ void buttonPressed()
 {
 	if(currentLevel == PAGE_1)
 	{
-		if(currentSelectedOption_Page1 == START_PROG_SOUNDS)
+		if(currentSelectedOption_Page1 == PROGRAM_PATTERNS)
 		{
 			currentLevel = PAGE_2;
 
@@ -156,7 +156,7 @@ void buttonPressed()
 
 			selectCurrentBeatProgramming(currentSelectedOption_Page2);
 		}
-		else if(currentSelectedOption_Page1 == PLAY_PROG_SOUNDS)
+		else if(currentSelectedOption_Page1 == SELECT_PATTERNS)
 		{
 			currentLevel = PAGE_3;
 			defaultPage3_display();
@@ -168,7 +168,8 @@ void buttonPressed()
 		{
 			currentLevel = PAGE_1;
 
-			// reset the current playing sound
+			resetProgramming();
+			selectCurrentBeatProgramming(currentSelectedOption_Page2);
 
 			defaultPage1_display();
 		}
@@ -384,12 +385,12 @@ void lcdMenuLevel_1(int itr, rotatatory_encoder_evt_t type)
 
 
 	SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
-	SSD1306_Puts ("Start prog patt", &Font_7x10, 1); // print
+	SSD1306_Puts ("Select pattern", &Font_7x10, 1); // print
 
 	perfromMovement(&itr, type, PAGE_1);
 
 	SSD1306_GotoXY (5, rowLocationValue[itr]); // goto 10, 10
-	SSD1306_Puts ("Play prog patt", &Font_7x10, 1); // print
+	SSD1306_Puts ("Program pattern", &Font_7x10, 1); // print
 
 
     SSD1306_UpdateScreen(); // update screen
@@ -458,12 +459,12 @@ void lcdMenuLevel_2(int itr, rotatatory_encoder_evt_t type)
 
 			case RESET_PATTERN:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
-				SSD1306_Puts ("      Reset", &Font_7x10, 1);
+				SSD1306_Puts ("   <RESET ALL>", &Font_7x10, 1);
 				break;
 
 			case PAGE2_BACK:
 				SSD1306_GotoXY (5, rowLocationValue[pos++]);
-				SSD1306_Puts ("     <back>", &Font_7x10, 1);
+				SSD1306_Puts ("     <BACK>", &Font_7x10, 1);
 				break;
 
 			default:

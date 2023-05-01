@@ -22,8 +22,8 @@ typedef enum {
 } Page_number;
 
 typedef enum {
-	START_PROG_SOUNDS,
-	PLAY_PROG_SOUNDS,
+	SELECT_PATTERNS,
+	PROGRAM_PATTERNS,
 	NUM_PG1_OPS
 } Page1_options;
 

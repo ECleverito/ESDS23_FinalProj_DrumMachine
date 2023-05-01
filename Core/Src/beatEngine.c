@@ -345,6 +345,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
+void resetProgramming()
+{
+	hatBeatProgramming = 0;
+	kickBeatProgramming = 0;
+	opHatBeatProgramming = 0;
+	rimBeatProgramming = 0;
+	snareBeatProgramming = 0;
+	tom1BeatProgramming = 0;
+	tom2BeatProgramming = 0;
+	tom3BeatProgramming = 0;
+	trashBeatProgramming = 0;
+}
+
 void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
 {
 
