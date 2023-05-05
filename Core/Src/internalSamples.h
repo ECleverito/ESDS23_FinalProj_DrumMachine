@@ -28,11 +28,11 @@ extern const int16_t tom3_sample[7144];
 
 extern const int16_t trash_sample[7144];
 
-extern const int16_t tunak_sample[3576];
+extern const int16_t tunak_sample[7152];
 
-extern const int16_t tun_sample[3450];
+extern const int16_t tun_sample[6900];
 
-extern const int16_t dai_sample[3582];
+extern const int16_t dai_sample[7144];
 
 #endif
 /* SRC_INTERNALSAMPLES_H_ */
